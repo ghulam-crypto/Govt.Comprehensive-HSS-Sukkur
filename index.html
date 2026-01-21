@@ -22,7 +22,7 @@
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
             opacity: 0.08; pointer-events: none; white-space: nowrap;
-            font-size: 5rem; font-weight: 900; color: #166534; z-index: 0;
+            font-size: 3rem; font-weight: 900; color: #166534; z-index: 0;
         }
 
         /* Print Specifics */
@@ -34,9 +34,6 @@
             .print-header { display: block !important; }
         }
     </style>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6499095248956921"
-     crossorigin="anonymous"></script>
 </head>
 <body class="flex flex-col min-h-screen">
 
@@ -45,7 +42,7 @@
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-4 cursor-pointer" onclick="showSection('home')">
                     <div class="bg-white p-2 rounded-full shadow-lg">
-                        <img src="https://lh3.googleusercontent.com/d/18LalVO70tS5zPgK3RsVSf4yK9TvtmZQT" class="w-12 h-12 object-contain">
+                        <div class="w-12 h-12 flex items-center justify-center text-green-900 font-bold text-2xl">GC</div>
                     </div>
                     <div>
                         <h1 class="text-xl md:text-2xl font-bold uppercase tracking-wide">Govt. Comprehensive</h1>
@@ -76,30 +73,23 @@
 
         <div id="section-home" class="space-y-8 fade-in">
             
-            <div class="relative w-full h-56 md:h-96 rounded-2xl overflow-hidden shadow-2xl group border-b-4 border-green-600">
-    
-    <img src="https://lh3.googleusercontent.com/d/1xOmgEaTI6NslLHDi21E6r1AWX4frIA9t" class="slide active w-full h-full object-cover">
-    <img src="https://lh3.googleusercontent.com/d/1hNQcgS7Jee97zWe9sLoPD-XO9jaFhNYN" class="slide w-full h-full object-cover">
-    <img src="https://lh3.googleusercontent.com/d/19G2MWRjeVaRoszZwAWh_YvQjkOLAAHCw" class="slide w-full h-full object-cover">
-    <img src="https://lh3.googleusercontent.com/d/1pzGInepUMFbZ3ePsGp0SkLQy0hPi2OAV" class="slide w-full h-full object-cover">
-    <img src="https://lh3.googleusercontent.com/d/1diwpdDpgkiJQ7YZzDlk9WXUv2GOP0f84" class="slide w-full h-full object-cover">
-    <img src="https://lh3.googleusercontent.com/d/15wbNoMTWczFgAP9j5BobBryp6l9supvX" class="slide w-full h-full object-cover">
-    <img src="https://lh3.googleusercontent.com/d/1CNhh5MMo1Ks07LEUQvddU5kasZGYjYif" class="slide w-full h-full object-cover">
+            <div class="relative w-full h-56 md:h-96 rounded-2xl overflow-hidden shadow-2xl group border-b-4 border-green-600 bg-gray-300">
+                <div class="slide active w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/p/AF1QipN-zF-y5-m-k-x-j-l-g-h-t-1');"></div>
+                <div class="slide w-full h-full bg-green-800 flex items-center justify-center text-white text-4xl font-bold">Campus View</div>
+                <div class="slide w-full h-full bg-green-700 flex items-center justify-center text-white text-4xl font-bold">Library</div>
 
-    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 md:p-10">
-        <div>
-            <h2 class="text-white text-2xl md:text-4xl font-bold mb-2">Empowering the Future of Sukkur</h2>
-        </div>
-    </div>
-</div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 md:p-10">
+                    <div>
+                        <h2 class="text-white text-2xl md:text-4xl font-bold mb-2">Empowering the Future of Sukkur</h2>
+                    </div>
+                </div>
+            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-600">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-full h-full">
-                            </div>
+                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-2xl">👨‍🏫</div>
                             <div>
                                 <h3 class="font-bold text-lg">Senior Principal</h3>
                                 <p class="text-xs text-gray-500">Message</p>
@@ -109,9 +99,7 @@
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-full h-full">
-                            </div>
+                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-2xl">🏫</div>
                             <div>
                                 <h3 class="font-bold text-lg">Principal</h3>
                                 <p class="text-xs text-gray-500">Message</p>
@@ -126,27 +114,25 @@
                         <i data-lucide="bell" class="w-5 h-5 mr-2"></i> Notice Board
                     </div>
                     <div class="p-4 h-48 overflow-y-auto" id="notification-area">
-                        <p class="text-sm text-gray-500">Loading notices...</p>
+                        <p class="text-sm text-gray-500 animate-pulse">Connecting to server...</p>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Today's Attendance Overview</h3>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="text-center">
+                        <div class="text-center relative">
                             <canvas id="teacherChart"></canvas>
                             <p class="mt-2 text-sm font-semibold text-gray-600">Teachers</p>
                         </div>
-                        <div class="text-center">
+                        <div class="text-center relative">
                             <canvas id="studentChart"></canvas>
                             <p class="mt-2 text-sm font-semibold text-gray-600">Students</p>
                         </div>
                     </div>
                 </div>
-
                 <div class="bg-white p-6 rounded-xl shadow-md">
                     <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Academic Calendar</h3>
                     <iframe src="https://calendar.google.com/calendar/embed?height=300&wkst=1&bgcolor=%23ffffff&ctz=Asia%2FKarachi&src=en.pk%23holiday%40group.v.calendar.google.com&color=%230B8043" 
@@ -163,11 +149,12 @@
                 </div>
                 <div class="flex flex-col gap-3">
                     <input type="text" id="searchInput" 
-                        class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 uppercase">
+                        class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 uppercase" placeholder="e.g. 10255">
                     <button onclick="searchStudent()" class="bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition">
                         View Result
                     </button>
                     <p id="errorMsg" class="text-red-500 text-center text-sm hidden font-medium"></p>
+                    <p id="loadingMsg" class="text-green-600 text-center text-sm hidden animate-pulse">Fetching data from database...</p>
                 </div>
             </div>
 
@@ -177,12 +164,10 @@
                 </button>
 
                 <div id="result-card" class="bg-white rounded-none md:rounded-xl shadow-lg border border-gray-300 relative overflow-hidden p-8 min-h-[600px]">
-                    
                     <div class="watermark">Govt. Comprehensive HS School</div>
-
                     <div class="text-center border-b-2 border-green-800 pb-4 mb-6">
                         <div class="flex justify-center items-center gap-4 mb-2">
-                            <img src="https://lh3.googleusercontent.com/d/18LalVO70tS5zPgK3RsVSf4yK9TvtmZQT" class="w-16 h-16 grayscale opacity-80">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500">LOGO</div>
                             <div>
                                 <h1 class="text-3xl font-extrabold text-green-900 uppercase">Govt. Comprehensive</h1>
                                 <h2 class="text-lg font-bold text-gray-700">Higher Secondary School Sukkur</h2>
@@ -260,7 +245,7 @@
 
         <div id="section-faculty" class="hidden">
             <h2 class="text-2xl font-bold text-center text-green-800 mb-6">School Faculty</h2>
-            <div id="teacher-loader" class="text-center hidden">Loading...</div>
+            <div id="teacher-loader" class="text-center hidden text-green-600 animate-pulse">Loading Faculty Data...</div>
             <div id="teachers-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
         </div>
 
@@ -269,15 +254,20 @@
     <script>
         lucide.createIcons();
 
-        // --- 1. Global State ---
+        // ============================================
+        //  YOUR CONNECTED BACKEND URL
+        // ============================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbxGMBT2ioG8a1-PTfq1WUCt3SThsevPbw0IUOiSJf9Htzb0M1bQT9_4fjTggacmTJT5/exec"; 
+        
+        // ============================================
+
         let allStudents = [];
         let dashboardData = {};
 
-        // --- 2. Startup ---
         window.onload = function() {
             startSlider();
             loadDashboard();
-            fetchStudents(); // Pre-load students
+            fetchStudents(); // Pre-load students in background
         };
 
         function showSection(id) {
@@ -286,7 +276,7 @@
                 document.getElementById('nav-'+sec).classList.remove('bg-green-700');
             });
             document.getElementById('section-'+id).classList.remove('hidden');
-            document.getElementById('nav-'+id).classList.add('bg-green-700'); // Active state
+            document.getElementById('nav-'+id).classList.add('bg-green-700');
 
             if(id === 'faculty') loadTeachers();
         }
@@ -295,29 +285,28 @@
         function startSlider() {
             let slideIndex = 0;
             const slides = document.getElementsByClassName("slide");
+            if(slides.length === 0) return;
             
             function showSlides() {
                 for (let i = 0; i < slides.length; i++) slides[i].classList.remove('active');
                 slideIndex++;
                 if (slideIndex > slides.length) slideIndex = 1;
                 slides[slideIndex-1].classList.add('active');
-                setTimeout(showSlides, 4000); // Change image every 4 seconds
+                setTimeout(showSlides, 4000);
             }
             showSlides();
         }
 
         // --- 4. Dashboard & Chart Logic ---
         function loadDashboard() {
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(renderDashboard).getDashboardStats();
-            } else {
-                // Mock for testing
-                renderDashboard({
-                    teachers: { present: 45, leave: 5 },
-                    students: { present: 1100, leave: 120 },
-                    notifications: ["Welcome to the new portal.", "Exam schedule released."]
-                });
-            }
+            fetch(`${API_URL}?action=getDashboardStats`)
+            .then(response => response.json())
+            .then(json => {
+                if(json.success) {
+                    renderDashboard(json.data);
+                }
+            })
+            .catch(err => console.error("Dashboard Load Error:", err));
         }
 
         function renderDashboard(data) {
@@ -334,13 +323,16 @@
         }
 
         function createPieChart(canvasId, data, labels) {
-            new Chart(document.getElementById(canvasId), {
+            const ctx = document.getElementById(canvasId);
+            if(!ctx) return;
+            
+            new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: ['#166534', '#ef4444'], // Green, Red
+                        backgroundColor: ['#166534', '#ef4444'], 
                         borderWidth: 0
                     }]
                 },
@@ -350,13 +342,43 @@
 
         // --- 5. Result Logic (Official Card) ---
         function fetchStudents() {
-             if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(d => { if(d.success) allStudents = d.data; }).getStudentData();
-            }
+            // Background fetch all students
+            fetch(`${API_URL}?action=getStudentData`)
+            .then(res => res.json())
+            .then(json => {
+                if(json.success) allStudents = json.data;
+            })
+            .catch(err => console.error("Student Fetch Error:", err));
         }
 
         function searchStudent() {
             const input = document.getElementById('searchInput').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            const loadingMsg = document.getElementById('loadingMsg');
+
+            if(!input) return;
+
+            // Simple visual loading state if data isn't ready
+            if(allStudents.length === 0) {
+                loadingMsg.classList.remove('hidden');
+                // Try fetching again if empty
+                fetch(`${API_URL}?action=getStudentData`)
+                .then(res => res.json())
+                .then(json => {
+                    loadingMsg.classList.add('hidden');
+                    if(json.success) {
+                        allStudents = json.data;
+                        performSearch(input); // Try search again
+                    }
+                });
+                return;
+            }
+
+            performSearch(input);
+        }
+
+        function performSearch(input) {
+            // Try to match strict, or loose equality
             const s = allStudents.find(st => String(st.SeatNo) == input);
             
             if(s) {
@@ -364,40 +386,37 @@
                 document.getElementById('result-container').classList.remove('hidden');
                 
                 // Populate Standard Fields
-                document.getElementById('rName').innerText = s.Name;
-                document.getElementById('rFather').innerText = s.FatherName;
-                document.getElementById('rClass').innerText = s.Class;
-                document.getElementById('rSeat').innerText = s.SeatNo;
-                document.getElementById('rTotal').innerText = s.Total;
+                document.getElementById('rName').innerText = s.Name || '--';
+                document.getElementById('rFather').innerText = s.FatherName || '--';
+                document.getElementById('rClass').innerText = s.Class || '--';
+                document.getElementById('rSeat').innerText = s.SeatNo || '--';
+                document.getElementById('rTotal').innerText = s.Total || '--';
                 
-                // --- FIX: Dynamic GR No Finder ---
-                // Scans keys for anything looking like "GRNo", "GR.No", "G.R.No"
+                // GR No Logic (Finds any column named "GRNo", "G.R.No", etc)
                 const grKey = Object.keys(s).find(k => /g\.?r\.?\s*no/i.test(k)) || 'GRNo';
                 document.getElementById('rGRNo').innerText = s[grKey] || '-';
                 
-                // Result Status Color
+                // Status Color
                 const resDiv = document.getElementById('rResult');
-                resDiv.innerText = s.Result;
-                resDiv.className = s.Result.toLowerCase().includes('fail') ? "text-2xl font-bold text-red-600" : "text-2xl font-bold text-green-600";
+                const resultTxt = s.Result || 'PASS';
+                resDiv.innerText = resultTxt;
+                resDiv.className = resultTxt.toLowerCase().includes('fail') ? "text-2xl font-bold text-red-600" : "text-2xl font-bold text-green-600";
 
                 // Generate Table
                 const tbody = document.getElementById('marksBody');
                 tbody.innerHTML = '';
                 
-                // --- FIX: Added grKey to ignore list so it doesn't show in table ---
                 const ignore = ['Name','FatherName','Class','SeatNo','Result','Total','SNo', 'Caste', 'Percentage', 'Grade', 'Position', grKey];
                 
                 let subjectCount = 0; 
-
                 Object.keys(s).forEach(key => {
-                    // Normalize checking to ensure we don't accidentally print GRNo variations
                     const isGrNo = /g\.?r\.?\s*no/i.test(key); 
-                    
+                    // Only show keys that are not ignored and have a value
                     if(!ignore.includes(key) && !isGrNo && s[key]) {
                         subjectCount++; 
                         tbody.innerHTML += `
                             <tr>
-                                <td class="border border-gray-300 p-2">${key}</td>
+                                <td class="border border-gray-300 p-2 capitalize">${key}</td>
                                 <td class="border border-gray-300 p-2 text-right text-gray-500">100</td>
                                 <td class="border border-gray-300 p-2 text-right font-bold">${s[key]}</td>
                             </tr>`;
@@ -407,8 +426,9 @@
                 document.getElementById('rMaxTotal').innerText = subjectCount * 100;
 
             } else {
-                document.getElementById('errorMsg').innerText = "Record not found.";
-                document.getElementById('errorMsg').classList.remove('hidden');
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.innerText = "Record not found. Check Seat Number.";
+                errorMsg.classList.remove('hidden');
             }
         }
 
@@ -416,6 +436,7 @@
             document.getElementById('result-container').classList.add('hidden');
             document.getElementById('search-container').classList.remove('hidden');
             document.getElementById('searchInput').value = '';
+            document.getElementById('errorMsg').classList.add('hidden');
         }
 
         // --- 6. Faculty Logic ---
@@ -424,24 +445,27 @@
             if(grid.children.length > 0) return; // Already loaded
 
             document.getElementById('teacher-loader').classList.remove('hidden');
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(res => {
-                    document.getElementById('teacher-loader').classList.add('hidden');
-                    if(res.success) {
-                        res.data.forEach(t => {
-                            grid.innerHTML += `
-                                <div class="bg-white p-4 rounded shadow border-t-4 border-green-600">
-                                    <h3 class="font-bold text-lg">${t.Name}</h3>
-                                    <p class="text-sm text-green-700 font-semibold">${t.Designation}</p>
-                                    <p class="text-xs text-gray-500 mt-1">${t.Qualification}</p>
-                                </div>
-                            `;
-                        });
-                    }
-                }).getTeacherData();
-            }
+
+            fetch(`${API_URL}?action=getTeacherData`)
+            .then(res => res.json())
+            .then(json => {
+                document.getElementById('teacher-loader').classList.add('hidden');
+                if(json.success) {
+                    json.data.forEach(t => {
+                        grid.innerHTML += `
+                            <div class="bg-white p-4 rounded shadow border-t-4 border-green-600">
+                                <h3 class="font-bold text-lg">${t.Name}</h3>
+                                <p class="text-sm text-green-700 font-semibold">${t.Designation}</p>
+                                <p class="text-xs text-gray-500 mt-1">${t.Qualification}</p>
+                            </div>
+                        `;
+                    });
+                }
+            })
+            .catch(err => {
+                document.getElementById('teacher-loader').innerText = "Error loading data. Check internet.";
+            });
         }
     </script>
 </body>
-
 </html>
