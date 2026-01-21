@@ -31,7 +31,6 @@
             #result-card, #result-card * { visibility: visible; }
             #result-card { position: absolute; left: 0; top: 0; width: 100%; border: none; shadow: none; }
             .no-print { display: none !important; }
-            .print-header { display: block !important; }
         }
     </style>
 </head>
@@ -72,12 +71,10 @@
     <main class="flex-grow container mx-auto px-4 py-6">
 
         <div id="section-home" class="space-y-8 fade-in">
-            
             <div class="relative w-full h-56 md:h-96 rounded-2xl overflow-hidden shadow-2xl group border-b-4 border-green-600 bg-gray-300">
                 <div class="slide active w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/p/AF1QipN-zF-y5-m-k-x-j-l-g-h-t-1');"></div>
                 <div class="slide w-full h-full bg-green-800 flex items-center justify-center text-white text-4xl font-bold">Campus View</div>
                 <div class="slide w-full h-full bg-green-700 flex items-center justify-center text-white text-4xl font-bold">Library</div>
-
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 md:p-10">
                     <div>
                         <h2 class="text-white text-2xl md:text-4xl font-bold mb-2">Empowering the Future of Sukkur</h2>
@@ -92,7 +89,6 @@
                             <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-2xl">👨‍🏫</div>
                             <div>
                                 <h3 class="font-bold text-lg">Senior Principal</h3>
-                                <p class="text-xs text-gray-500">Message</p>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600 italic">"Discipline and dedication are the keys to success. We strive to provide the best environment for our students."</p>
@@ -102,7 +98,6 @@
                             <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-2xl">🏫</div>
                             <div>
                                 <h3 class="font-bold text-lg">Principal</h3>
-                                <p class="text-xs text-gray-500">Message</p>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600 italic">"Education is the most powerful weapon which you can use to change the world. Welcome to our portal."</p>
@@ -255,19 +250,17 @@
         lucide.createIcons();
 
         // ============================================
-        //  YOUR CONNECTED BACKEND URL
+        //  YOUR URL
         // ============================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbxGMBT2ioG8a1-PTfq1WUCt3SThsevPbw0IUOiSJf9Htzb0M1bQT9_4fjTggacmTJT5/exec"; 
-        
+        const API_URL = "https://script.google.com/macros/s/AKfycbxhyMJo8Vni9MujuImZ_KmwBtr014ETPB5lYFMghABO1FqT10mBG6WEhcJGzqKJLjJQ/exec"; 
         // ============================================
 
         let allStudents = [];
-        let dashboardData = {};
 
         window.onload = function() {
             startSlider();
             loadDashboard();
-            fetchStudents(); // Pre-load students in background
+            fetchStudents(); 
         };
 
         function showSection(id) {
@@ -277,16 +270,14 @@
             });
             document.getElementById('section-'+id).classList.remove('hidden');
             document.getElementById('nav-'+id).classList.add('bg-green-700');
-
             if(id === 'faculty') loadTeachers();
         }
 
-        // --- 3. Carousel Logic ---
+        // --- Slider & Dashboard ---
         function startSlider() {
             let slideIndex = 0;
             const slides = document.getElementsByClassName("slide");
             if(slides.length === 0) return;
-            
             function showSlides() {
                 for (let i = 0; i < slides.length; i++) slides[i].classList.remove('active');
                 slideIndex++;
@@ -297,58 +288,42 @@
             showSlides();
         }
 
-        // --- 4. Dashboard & Chart Logic ---
         function loadDashboard() {
             fetch(`${API_URL}?action=getDashboardStats`)
-            .then(response => response.json())
+            .then(res => res.json())
             .then(json => {
                 if(json.success) {
-                    renderDashboard(json.data);
+                    const notifDiv = document.getElementById('notification-area');
+                    notifDiv.innerHTML = json.data.notifications.map(n => 
+                        `<div class="border-b py-2 text-sm text-gray-700 flex"><i data-lucide="chevron-right" class="w-4 h-4 text-green-600 mr-2"></i> ${n}</div>`
+                    ).join('');
+                    lucide.createIcons();
+                    createPieChart('teacherChart', [json.data.teachers.present, json.data.teachers.leave]);
+                    createPieChart('studentChart', [json.data.students.present, json.data.students.leave]);
                 }
-            })
-            .catch(err => console.error("Dashboard Load Error:", err));
+            });
         }
 
-        function renderDashboard(data) {
-            // Notifications
-            const notifDiv = document.getElementById('notification-area');
-            notifDiv.innerHTML = data.notifications.map(n => 
-                `<div class="border-b py-2 text-sm text-gray-700 flex"><i data-lucide="chevron-right" class="w-4 h-4 text-green-600 mr-2"></i> ${n}</div>`
-            ).join('');
-            lucide.createIcons();
-
-            // Charts
-            createPieChart('teacherChart', [data.teachers.present, data.teachers.leave], ['Present', 'On Leave']);
-            createPieChart('studentChart', [data.students.present, data.students.leave], ['Present', 'On Leave']);
-        }
-
-        function createPieChart(canvasId, data, labels) {
+        function createPieChart(canvasId, data) {
             const ctx = document.getElementById(canvasId);
             if(!ctx) return;
-            
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: ['#166534', '#ef4444'], 
-                        borderWidth: 0
-                    }]
+                    labels: ['Present', 'On Leave'],
+                    datasets: [{ data: data, backgroundColor: ['#166534', '#ef4444'], borderWidth: 0 }]
                 },
                 options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
             });
         }
 
-        // --- 5. Result Logic (Official Card) ---
+        // --- Result Logic ---
         function fetchStudents() {
-            // Background fetch all students
             fetch(`${API_URL}?action=getStudentData`)
             .then(res => res.json())
             .then(json => {
                 if(json.success) allStudents = json.data;
-            })
-            .catch(err => console.error("Student Fetch Error:", err));
+            });
         }
 
         function searchStudent() {
@@ -358,47 +333,42 @@
 
             if(!input) return;
 
-            // Simple visual loading state if data isn't ready
             if(allStudents.length === 0) {
                 loadingMsg.classList.remove('hidden');
-                // Try fetching again if empty
                 fetch(`${API_URL}?action=getStudentData`)
                 .then(res => res.json())
                 .then(json => {
                     loadingMsg.classList.add('hidden');
                     if(json.success) {
                         allStudents = json.data;
-                        performSearch(input); // Try search again
+                        performSearch(input);
                     }
                 });
                 return;
             }
-
             performSearch(input);
         }
 
         function performSearch(input) {
-            // Try to match strict, or loose equality
-            const s = allStudents.find(st => String(st.SeatNo) == input);
+            // Find student matching SeatNo (Sanitized Key: SeatNo)
+            const s = allStudents.find(st => String(st.SeatNo).trim() === input);
             
             if(s) {
                 document.getElementById('search-container').classList.add('hidden');
                 document.getElementById('result-container').classList.remove('hidden');
+                document.getElementById('errorMsg').classList.add('hidden');
                 
-                // Populate Standard Fields
+                // Populate Metadata (Sanitized Keys)
                 document.getElementById('rName').innerText = s.Name || '--';
                 document.getElementById('rFather').innerText = s.FatherName || '--';
                 document.getElementById('rClass').innerText = s.Class || '--';
                 document.getElementById('rSeat').innerText = s.SeatNo || '--';
                 document.getElementById('rTotal').innerText = s.Total || '--';
+                document.getElementById('rGRNo').innerText = s.GrNo || s.GRNo || '--';
                 
-                // GR No Logic (Finds any column named "GRNo", "G.R.No", etc)
-                const grKey = Object.keys(s).find(k => /g\.?r\.?\s*no/i.test(k)) || 'GRNo';
-                document.getElementById('rGRNo').innerText = s[grKey] || '-';
-                
-                // Status Color
-                const resDiv = document.getElementById('rResult');
+                // Result Status
                 const resultTxt = s.Result || 'PASS';
+                const resDiv = document.getElementById('rResult');
                 resDiv.innerText = resultTxt;
                 resDiv.className = resultTxt.toLowerCase().includes('fail') ? "text-2xl font-bold text-red-600" : "text-2xl font-bold text-green-600";
 
@@ -406,17 +376,22 @@
                 const tbody = document.getElementById('marksBody');
                 tbody.innerHTML = '';
                 
-                const ignore = ['Name','FatherName','Class','SeatNo','Result','Total','SNo', 'Caste', 'Percentage', 'Grade', 'Position', grKey];
+                // Fields to EXCLUDE from Marks Table
+                const ignore = ['Name','FatherName','Class','SeatNo','Result','Total','SNo', 'GrNo', 'GRNo', 'Caste', 'Percentage', 'Grade', 'Position'];
                 
                 let subjectCount = 0; 
                 Object.keys(s).forEach(key => {
-                    const isGrNo = /g\.?r\.?\s*no/i.test(key); 
-                    // Only show keys that are not ignored and have a value
-                    if(!ignore.includes(key) && !isGrNo && s[key]) {
+                    if(!ignore.includes(key) && s[key]) {
                         subjectCount++; 
+                        
+                        // FORMATTING: Make sanitized keys readable again
+                        let displayName = key;
+                        if(key === 'SocialStudies') displayName = 'Social Studies';
+                        if(key === 'GScience') displayName = 'G. Science';
+                        
                         tbody.innerHTML += `
                             <tr>
-                                <td class="border border-gray-300 p-2 capitalize">${key}</td>
+                                <td class="border border-gray-300 p-2 capitalize">${displayName}</td>
                                 <td class="border border-gray-300 p-2 text-right text-gray-500">100</td>
                                 <td class="border border-gray-300 p-2 text-right font-bold">${s[key]}</td>
                             </tr>`;
@@ -439,10 +414,10 @@
             document.getElementById('errorMsg').classList.add('hidden');
         }
 
-        // --- 6. Faculty Logic ---
+        // --- Faculty Logic ---
         function loadTeachers() {
             const grid = document.getElementById('teachers-grid');
-            if(grid.children.length > 0) return; // Already loaded
+            if(grid.children.length > 0) return; 
 
             document.getElementById('teacher-loader').classList.remove('hidden');
 
@@ -461,9 +436,6 @@
                         `;
                     });
                 }
-            })
-            .catch(err => {
-                document.getElementById('teacher-loader').innerText = "Error loading data. Check internet.";
             });
         }
     </script>
