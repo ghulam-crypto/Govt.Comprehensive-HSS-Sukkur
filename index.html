@@ -12,12 +12,12 @@
         :root { --school-green: #166534; --school-gold: #fbbf24; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
         
-        /* Smooth Fade Slider */
+        /* Slider Animation */
         .slide { display: none; animation: fade 1.5s; }
         .slide.active { display: block; }
         @keyframes fade { from {opacity: .4} to {opacity: 1} }
         
-        /* Watermark */
+        /* Watermark for Result Card */
         .watermark {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
@@ -25,43 +25,58 @@
             font-size: 3rem; font-weight: 900; color: #166534; z-index: 0;
         }
 
-        /* Print Specifics */
+        /* ID Card Specific Styles */
+        .id-card {
+            width: 350px; height: 220px;
+            background: linear-gradient(135deg, #fff 60%, #e6fffa 100%);
+            border-left: 8px solid #166534;
+            position: relative; overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .id-header { background: #166534; color: white; padding: 8px; text-align: center; }
+
+        /* Print Logic */
         @media print {
             body * { visibility: hidden; }
-            #result-card, #result-card * { visibility: visible; }
-            #result-card { position: absolute; left: 0; top: 0; width: 100%; border: none; shadow: none; }
+            .printable-area, .printable-area * { visibility: visible; }
+            .printable-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
             .no-print { display: none !important; }
+            /* Force background graphics for ID cards */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
+
+        /* Modal */
+        .modal { background-color: rgba(0,0,0,0.5); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <header class="bg-green-900 text-white shadow-xl sticky top-0 z-50">
+    <header class="bg-green-900 text-white shadow-xl sticky top-0 z-50 no-print">
         <div class="container mx-auto px-4 py-3">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-4 cursor-pointer" onclick="showSection('home')">
                     <div class="bg-white p-2 rounded-full shadow-lg">
-                        <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-12 h-12 object-contain">
+                        <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-12 h-12 object-contain" alt="Logo">
                     </div>
                     <div>
                         <h1 class="text-xl md:text-2xl font-bold uppercase tracking-wide">Govt. Comprehensive</h1>
                         <h2 class="text-sm md:text-base text-green-200 font-semibold">Higher Secondary School Sukkur</h2>
                         <div class="text-xs text-green-300 mt-1 flex gap-3">
-                            <span><i class="inline w-3 h-3" data-lucide="map-pin"></i> Board Office Road, Sukkur</span>
-                            <span class="bg-green-800 px-2 rounded">SEMIS: 418050146</span>
+                            <span><i class="inline w-3 h-3" data-lucide="map-pin"></i> Board Office Road, Makha Goth</span>
+                            <span class="bg-green-800 px-2 rounded">SEMIS: 418050314</span>
                         </div>
                     </div>
                 </div>
 
                 <nav class="flex space-x-2 text-sm font-bold">
-                    <button onclick="showSection('home')" id="nav-home" class="nav-btn bg-green-700 px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center">
+                    <button onclick="showSection('home')" id="nav-home" class="bg-green-700 px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center">
                         <i data-lucide="home" class="w-4 h-4 mr-2"></i> Home
                     </button>
-                    <button onclick="showSection('result')" id="nav-result" class="nav-btn px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center">
-                        <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Results
+                    <button onclick="openLoginModal()" id="nav-login" class="px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center bg-yellow-500 text-green-900">
+                        <i data-lucide="log-in" class="w-4 h-4 mr-2"></i> Login
                     </button>
-                    <button onclick="showSection('faculty')" id="nav-faculty" class="nav-btn px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center">
-                        <i data-lucide="users" class="w-4 h-4 mr-2"></i> Faculty
+                    <button onclick="logout()" id="nav-logout" class="hidden px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition flex items-center">
+                        <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Logout
                     </button>
                 </nav>
             </div>
@@ -73,54 +88,30 @@
         <div id="section-home" class="space-y-8 fade-in">
             
             <div class="relative w-full h-56 md:h-96 rounded-2xl overflow-hidden shadow-2xl group border-b-4 border-green-600">
-    
-    <img src="https://lh3.googleusercontent.com/d/1hNQcgS7Jee97zWe9sLoPD-XO9jaFhNYN" class="slide active w-full h-full object-cover">
-    
-    <img src="https://lh3.googleusercontent.com/d/19G2MWRjeVaRoszZwAWh_YvQjkOLAAHCw" class="slide w-full h-full object-cover">
-    
-    <img src="https://lh3.googleusercontent.com/d/1pzGInepUMFbZ3ePsGp0SkLQy0hPi2OAV" class="slide w-full h-full object-cover">
-    
-    <img src="https://lh3.googleusercontent.com/d/1diwpdDpgkiJQ7YZzDlk9WXUv2GOP0f84" class="slide w-full h-full object-cover">
-    
-    <img src="https://lh3.googleusercontent.com/d/15wbNoMTWczFgAP9j5BobBryp6l9supvX" class="slide w-full h-full object-cover">
-    
-    <img src="https://lh3.googleusercontent.com/d/1CNhh5MMo1Ks07LEUQvddU5kasZGYjYif" class="slide w-full h-full object-cover">
-    
-    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 md:p-10">
-        <div>
-            <h2 class="text-white text-2xl md:text-4xl font-bold mb-2">Empowering the Future of Sukkur</h2>
-        
-        </div>
-    </div>
-</div>
+                <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded shadow z-20 font-bold animate-pulse">LATEST NEWS & EVENTS</div>
+                <img src="https://via.placeholder.com/1200x500/166534/FFFFFF?text=Annual+Sports+Week+2025" class="slide active w-full h-full object-cover">
+                <img src="https://via.placeholder.com/1200x500/064e3b/FFFFFF?text=New+Science+Lab+Inauguration" class="slide w-full h-full object-cover">
+                <img src="https://via.placeholder.com/1200x500/15803d/FFFFFF?text=Prize+Distribution+Ceremony" class="slide w-full h-full object-cover">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 md:p-10">
+                    <h2 class="text-white text-2xl md:text-4xl font-bold mb-2">Empowering the Future of Sukkur</h2>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-600">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-full h-full object-cover" alt="Senior Principal">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg">Senior Principal</h3>
-                                <p class="text-xs text-gray-500">Abdul Ghafoor Arain</p>
-                            </div>
+                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-full h-full object-cover"></div>
+                            <div><h3 class="font-bold text-lg">Senior Principal</h3><p class="text-xs text-gray-500">Abdul Ghafoor Arain</p></div>
                         </div>
                         <p class="text-sm text-gray-600 italic">"Discipline and dedication are the keys to success. We strive to provide the best environment for our students."</p>
                     </div>
 
                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" class="w-full h-full object-cover" alt="Principal">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg">Principal</h3>
-                                <p class="text-xs text-gray-500">Abdul Wahab </p>
-                            </div>
+                            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" class="w-full h-full object-cover"></div>
+                            <div><h3 class="font-bold text-lg">Principal</h3><p class="text-xs text-gray-500">Abdul Wahab</p></div>
                         </div>
                         <p class="text-sm text-gray-600 italic">"Education is the most powerful weapon which you can use to change the world. Welcome to our portal."</p>
                     </div>
@@ -130,24 +121,16 @@
                     <div class="bg-red-600 text-white p-3 font-bold flex items-center">
                         <i data-lucide="bell" class="w-5 h-5 mr-2"></i> Notice Board
                     </div>
-                    <div class="p-4 h-48 overflow-y-auto" id="notification-area">
-                        <p class="text-sm text-gray-500 animate-pulse">Connecting to server...</p>
-                    </div>
+                    <div class="p-4 h-48 overflow-y-auto" id="notification-area">Loading...</div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Today's Attendance Overview</h3>
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Today's Attendance</h3>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="text-center relative">
-                            <canvas id="teacherChart"></canvas>
-                            <p class="mt-2 text-sm font-semibold text-gray-600">Teachers</p>
-                        </div>
-                        <div class="text-center relative">
-                            <canvas id="studentChart"></canvas>
-                            <p class="mt-2 text-sm font-semibold text-gray-600">Students</p>
-                        </div>
+                        <div class="text-center"><canvas id="teacherChart"></canvas><p class="mt-2 text-sm">Teachers</p></div>
+                        <div class="text-center"><canvas id="studentChart"></canvas><p class="mt-2 text-sm">Students</p></div>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
@@ -156,148 +139,417 @@
                             style="border-width:0" width="100%" height="245" frameborder="0" scrolling="no"></iframe>
                 </div>
             </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md mt-6">
+                <h3 class="font-bold text-2xl text-green-800 mb-6 text-center">Meet Our Faculty</h3>
+                <div id="public-faculty-list" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div class="text-center text-gray-500 italic col-span-full">Loading Faculty Data...</div>
+                </div>
+            </div>
         </div>
 
-        <div id="section-result" class="hidden">
-            <div id="search-container" class="max-w-xl mx-auto bg-white rounded-xl shadow-md p-6 mt-10 border-t-4 border-green-600">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Student Result Portal</h2>
-                    <p class="text-gray-500 text-sm">Enter Seat Number to view result card.</p>
-                </div>
-                <div class="flex flex-col gap-3">
-                    <input type="text" id="searchInput" 
-                        class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 uppercase" placeholder="e.g. 10255">
-                    <button onclick="searchStudent()" class="bg-green-700 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition">
-                        View Result
+        <div id="section-student" class="hidden">
+            <div class="flex justify-between items-center mb-4 no-print">
+                <h2 class="text-2xl font-bold text-green-900">Student Dashboard</h2>
+                <div class="space-x-2">
+                    <button onclick="printDiv('result-card')" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
+                        <i data-lucide="printer" class="inline w-4 h-4 mr-1"></i> Print Marksheet
                     </button>
-                    <p id="errorMsg" class="text-red-500 text-center text-sm hidden font-medium"></p>
-                    <p id="loadingMsg" class="text-green-600 text-center text-sm hidden animate-pulse">Fetching data from database...</p>
+                    <button onclick="generateIDCard('student')" class="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700">
+                        <i data-lucide="id-card" class="inline w-4 h-4 mr-1"></i> Print ID Card
+                    </button>
                 </div>
             </div>
 
-            <div id="result-container" class="hidden max-w-4xl mx-auto mt-6">
-                <button onclick="resetSearch()" class="mb-4 text-green-700 font-medium flex items-center hover:underline no-print">
-                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back
+            <div id="result-card" class="printable-area bg-white rounded-none md:rounded-xl shadow-lg border border-gray-300 relative overflow-hidden p-8 min-h-[600px] max-w-4xl mx-auto mb-10">
+                <div class="watermark">Govt. Comprehensive HS School</div>
+                
+                <div class="text-center border-b-2 border-green-800 pb-4 mb-6">
+                    <div class="flex justify-center items-center gap-4 mb-2">
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-gray-200">
+                            <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-10 h-10 object-contain">
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-extrabold text-green-900 uppercase">Govt. Comprehensive</h1>
+                            <h2 class="text-lg font-bold text-gray-700">Higher Secondary School Sukkur</h2>
+                            <p class="text-sm text-gray-500">SEMIS CODE: 418050314</p>
+                        </div>
+                    </div>
+                    <span class="bg-black text-white px-4 py-1 rounded text-sm font-bold uppercase tracking-widest"> Official Marks certificate</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6 relative z-10" id="student-meta"></div>
+
+                <table class="w-full border-collapse border border-gray-300 text-sm relative z-10 mb-6">
+                    <thead class="bg-green-100">
+                        <tr>
+                            <th class="border border-gray-300 p-2 text-left">Subject</th>
+                            <th class="border border-gray-300 p-2 text-right">Max Marks</th>
+                            <th class="border border-gray-300 p-2 text-right">Obtained</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marksBody"></tbody>
+                    <tfoot class="bg-gray-50 font-bold">
+                        <tr>
+                            <td class="border border-gray-300 p-2">Grand Total</td>
+                            <td class="border border-gray-300 p-2 text-right" id="rMaxTotal">--</td>
+                            <td class="border border-gray-300 p-2 text-right text-green-800 text-lg" id="rTotal">--</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="text-center mb-8 relative z-10">
+                    <span class="text-gray-600 font-medium">Result Status: </span>
+                    <span id="rResult" class="text-2xl font-bold">PASS</span>
+                </div>
+
+                <div class="flex justify-between items-end mt-12 relative z-10 pt-8">
+                    <div class="text-center">
+                        <div class="border-b border-black w-40 mb-1"></div>
+                        <p class="text-xs font-bold">Class Teacher</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="border-b border-black w-40 mb-1"></div>
+                        <p class="text-xs font-bold">Senior Principal</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="student-id-container" class="hidden printable-area absolute top-0 left-0 bg-white p-10 z-50">
+                </div>
+        </div>
+
+        <div id="section-teacher" class="hidden max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-green-800">Teacher Dashboard</h2>
+                <button onclick="generateIDCard('teacher')" class="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700">
+                    <i data-lucide="id-card" class="inline w-4 h-4 mr-1"></i> Print My Card
                 </button>
+            </div>
 
-                <div id="result-card" class="bg-white rounded-none md:rounded-xl shadow-lg border border-gray-300 relative overflow-hidden p-8 min-h-[600px]">
-                    <div class="watermark">Govt. Comprehensive HS School</div>
-                    <div class="text-center border-b-2 border-green-800 pb-4 mb-6">
-                        <div class="flex justify-center items-center gap-4 mb-2">
-                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-gray-200">
-                                <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-10 h-10 object-contain">
-                            </div>
-                            <div>
-                                <h1 class="text-3xl font-extrabold text-green-900 uppercase">Govt. Comprehensive</h1>
-                                <h2 class="text-lg font-bold text-gray-700">Higher Secondary School Sukkur</h2>
-                                <p class="text-sm text-gray-500">SEMIS CODE: 418050146</p>
-                            </div>
-                        </div>
-                        <span class="bg-black text-white px-4 py-1 rounded text-sm font-bold uppercase tracking-widest"> Official Marks certificate</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-6 relative z-10">
-                        <div>
-                            <p class="text-gray-500 text-sm">Student Name:</p>
-                            <p class="font-bold text-lg text-gray-800 border-b border-gray-300" id="rName">--</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Father's Name:</p>
-                            <p class="font-bold text-lg text-gray-800 border-b border-gray-300" id="rFather">--</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Class / Group:</p>
-                            <p class="font-bold text-gray-800" id="rClass">--</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Seat Number:</p>
-                            <p class="font-bold text-gray-800" id="rSeat">--</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">GR No:</p>
-                            <p class="font-bold text-gray-800" id="rGRNo">--</p>
-                        </div>
-                    </div>
-
-                    <table class="w-full border-collapse border border-gray-300 text-sm relative z-10 mb-6">
-                        <thead class="bg-green-100">
-                            <tr>
-                                <th class="border border-gray-300 p-2 text-left">Subject</th>
-                                <th class="border border-gray-300 p-2 text-right">Max Marks</th>
-                                <th class="border border-gray-300 p-2 text-right">Obtained</th>
-                            </tr>
-                        </thead>
-                        <tbody id="marksBody"></tbody>
-                        <tfoot class="bg-gray-50 font-bold">
-                            <tr>
-                                <td class="border border-gray-300 p-2">Grand Total</td>
-                                <td class="border border-gray-300 p-2 text-right" id="rMaxTotal">--</td>
-                                <td class="border border-gray-300 p-2 text-right text-green-800 text-lg" id="rTotal">000</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                    
-                    <div class="text-center mb-8 relative z-10">
-                        <span class="text-gray-600 font-medium">Result Status: </span>
-                        <span id="rResult" class="text-2xl font-bold">PASS</span>
-                    </div>
-
-                    <div class="flex justify-between items-end mt-12 relative z-10 pt-8">
-                        <div class="text-center">
-                            <div class="border-b border-black w-40 mb-1"></div>
-                            <p class="text-xs font-bold">Class Teacher</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="border-b border-black w-40 mb-1"></div>
-                            <p class="text-xs font-bold">Senior Principal</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center mt-6 no-print">
-                    <button onclick="window.print()" class="bg-gray-800 text-white px-8 py-3 rounded-full shadow-lg hover:bg-black transition font-bold">
-                        Print Official Card
-                    </button>
+            <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                <h3 class="font-bold mb-2">Update Student Result</h3>
+                <div class="flex gap-2">
+                    <input type="text" id="teacher-seat-input" placeholder="Enter Seat Number" class="border p-2 rounded w-full">
+                    <button onclick="teacherSearchStudent()" class="bg-blue-600 text-white p-2 rounded">Search</button>
                 </div>
             </div>
+            
+            <div id="teacher-editor" class="hidden bg-white p-6 rounded-xl shadow-md border-t-4 border-yellow-500">
+                <h3 class="font-bold text-lg mb-4">Editing: <span id="edit-student-name" class="text-blue-600"></span></h3>
+                <div id="edit-fields" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                <button onclick="saveStudentResult()" class="mt-6 bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800 w-full font-bold">Save Changes</button>
+            </div>
+
+            <div id="teacher-id-container" class="hidden printable-area absolute top-0 left-0 bg-white p-10 z-50"></div>
         </div>
 
-        <div id="section-faculty" class="hidden">
-            <h2 class="text-2xl font-bold text-center text-green-800 mb-6">School Faculty</h2>
-            <div id="teacher-loader" class="text-center hidden text-green-600 animate-pulse">Loading Faculty Data...</div>
-            <div id="teachers-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        <div id="section-admin" class="hidden max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold text-red-800 mb-4">Admin Control Panel</h2>
+            <div class="bg-white p-6 rounded-xl shadow-md mb-8 border-l-4 border-red-600">
+                <h3 class="font-bold text-lg mb-4">Manage Faculty Credentials</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="admin-t-id" placeholder="Teacher ID (Username)" class="border p-2 rounded">
+                    <input id="admin-t-pass" placeholder="Password" class="border p-2 rounded">
+                    <input id="admin-t-name" placeholder="Full Name" class="border p-2 rounded">
+                    <input id="admin-t-desig" placeholder="Designation" class="border p-2 rounded">
+                </div>
+                <div class="flex gap-2 mt-4">
+                    <button onclick="adminManageTeacher('add')" class="bg-green-600 text-white px-4 py-2 rounded">Add New Teacher</button>
+                    <button onclick="adminManageTeacher('edit')" class="bg-blue-600 text-white px-4 py-2 rounded">Update Existing ID</button>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="font-bold text-lg mb-4">Registered Teachers</h3>
+                <button onclick="loadAdminTeacherList()" class="text-sm text-blue-600 underline mb-2">Refresh List</button>
+                <div id="admin-teacher-list" class="overflow-x-auto"></div>
+            </div>
         </div>
 
     </main>
 
+    <footer class="bg-gray-800 text-gray-300 py-6 mt-10 no-print">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-sm">
+                &copy; 2024 Govt. Comprehensive HSS Sukkur. All rights reserved.<br>
+                <span class="text-gray-500">Board Office Road, Makha Goth Sukkur</span>
+            </div>
+            <div class="flex items-center gap-3 bg-gray-700 px-4 py-2 rounded-full border border-gray-600">
+                <div class="text-right">
+                    <p class="text-xs uppercase tracking-wider font-bold text-green-400">Developed By</p>
+                    <p class="text-sm font-semibold text-white">Ghulam Mehdi Junejo</p>
+                </div>
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-10 h-10 rounded-full border-2 border-green-500" alt="Developer">
+            </div>
+        </div>
+    </footer>
+
+    <div id="loginModal" class="fixed inset-0 modal hidden flex items-center justify-center z-[100] no-print">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500"><i data-lucide="x"></i></button>
+            <h2 class="text-2xl font-bold text-center text-green-900 mb-6">Portal Login</h2>
+            <div class="flex justify-center mb-6 bg-gray-100 p-1 rounded-lg">
+                <button onclick="setLoginRole('student')" id="tab-student" class="flex-1 py-2 rounded-md font-bold text-sm bg-white shadow text-green-800">Student</button>
+                <button onclick="setLoginRole('teacher')" id="tab-teacher" class="flex-1 py-2 rounded-md font-bold text-sm text-gray-500">Teacher</button>
+                <button onclick="setLoginRole('admin')" id="tab-admin" class="flex-1 py-2 rounded-md font-bold text-sm text-gray-500">Admin</button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="lbl-user">Seat Number</label>
+                    <input type="text" id="login-user" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="lbl-pass">GR Number (Password)</label>
+                    <input type="password" id="login-pass" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                </div>
+                <button onclick="performLogin()" id="btnLogin" class="w-full bg-green-800 text-white py-3 rounded-lg font-bold hover:bg-green-900 transition">Login</button>
+                <p id="login-msg" class="text-center text-red-500 text-sm h-4"></p>
+            </div>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
+        const API_URL = "https://script.google.com/macros/s/AKfycbzED9cjIpi2DENKvayOCZYN7xqbe7nJ7Vdz7NdpYpohHMuzBmKNO6_0s4EMjUjyCCts/exec";
 
-        // ============================================
-        //  YOUR URL (Pre-filled)
-        // ============================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbxGMBT2ioG8a1-PTfq1WUCt3SThsevPbw0IUOiSJf9Htzb0M1bQT9_4fjTggacmTJT5/exec"; 
-        // ============================================
-
-        let allStudents = [];
+        let currentRole = 'student';
+        let currentUser = null; 
 
         window.onload = function() {
             startSlider();
             loadDashboard();
-            fetchStudents(); 
+            loadPublicFaculty();
         };
 
+        // --- NAVIGATION & UTILS ---
         function showSection(id) {
-            ['home', 'result', 'faculty'].forEach(sec => {
-                document.getElementById('section-'+sec).classList.add('hidden');
-                document.getElementById('nav-'+sec).classList.remove('bg-green-700');
-            });
+            document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
             document.getElementById('section-'+id).classList.remove('hidden');
-            document.getElementById('nav-'+id).classList.add('bg-green-700');
-            if(id === 'faculty') loadTeachers();
         }
 
-        // --- Slider & Dashboard ---
+        function printDiv(divId) {
+            const content = document.getElementById(divId);
+            const others = document.body.children;
+            content.classList.add('printable-area');
+            window.print();
+            content.classList.remove('printable-area');
+        }
+
+        // --- LOGIN LOGIC ---
+        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+        
+        function setLoginRole(role) {
+            currentRole = role;
+            ['student','teacher','admin'].forEach(r => {
+                document.getElementById('tab-'+r).className = (r===role) ? "flex-1 py-2 rounded-md font-bold text-sm bg-white shadow text-green-800" : "flex-1 py-2 rounded-md font-bold text-sm text-gray-500";
+            });
+            if(role === 'student') { document.getElementById('lbl-user').innerText = "Seat Number"; document.getElementById('lbl-pass').innerText = "GR Number"; }
+            else if(role === 'teacher') { document.getElementById('lbl-user').innerText = "Teacher ID"; document.getElementById('lbl-pass').innerText = "Password"; }
+            else { document.getElementById('lbl-user').innerText = "Admin Username"; document.getElementById('lbl-pass').innerText = "Admin Password"; }
+        }
+
+        function performLogin() {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            const btn = document.getElementById('btnLogin');
+            const msg = document.getElementById('login-msg');
+
+            if(!user || !pass) { msg.innerText = "Credentials required"; return; }
+            btn.innerText = "Verifying..."; btn.disabled = true;
+
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', role: currentRole, username: user, password: pass })
+            })
+            .then(res => res.json())
+            .then(json => {
+                btn.innerText = "Login"; btn.disabled = false;
+                if(json.success) {
+                    currentUser = json;
+                    closeLoginModal();
+                    document.getElementById('nav-login').classList.add('hidden');
+                    document.getElementById('nav-logout').classList.remove('hidden');
+                    
+                    if(currentRole === 'student') {
+                        renderStudentResult(json.data);
+                        showSection('student');
+                    } else if(currentRole === 'teacher') {
+                        showSection('teacher');
+                    } else if(currentRole === 'admin') {
+                        showSection('admin');
+                        loadAdminTeacherList();
+                    }
+                } else {
+                    msg.innerText = json.message;
+                }
+            })
+            .catch(e => { btn.innerText="Login"; btn.disabled=false; msg.innerText="Connection Error"; });
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('nav-login').classList.remove('hidden');
+            document.getElementById('nav-logout').classList.add('hidden');
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+            showSection('home');
+        }
+
+        // --- ID CARD GENERATOR ---
+        function generateIDCard(type) {
+            let container, name, subTitle, idLabel, idValue, imgUrl;
+            
+            if(type === 'student') {
+                if(!currentUser || !currentUser.data) return;
+                const s = currentUser.data;
+                container = document.getElementById('student-id-container');
+                name = s.Name;
+                subTitle = `Class: ${s.Class}`;
+                idLabel = "Seat No";
+                idValue = s.SeatNo;
+                imgUrl = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"; // Placeholder
+            } else {
+                // Teacher
+                if(!currentUser) return;
+                container = document.getElementById('teacher-id-container');
+                name = currentUser.name;
+                subTitle = "Faculty Member";
+                idLabel = "Staff ID";
+                idValue = currentUser.id;
+                imgUrl = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
+            }
+
+            container.innerHTML = `
+                <div class="id-card">
+                    <div class="id-header">
+                        <h3 class="text-sm font-bold uppercase">Govt. Comp. HSS Sukkur</h3>
+                        <p class="text-[10px]">Identity Card</p>
+                    </div>
+                    <div class="flex items-center p-4 gap-4">
+                        <img src="${imgUrl}" class="w-20 h-20 rounded border-2 border-green-600 object-cover">
+                        <div>
+                            <h2 class="font-bold text-lg text-gray-800 leading-tight">${name}</h2>
+                            <p class="text-green-700 font-semibold text-sm">${subTitle}</p>
+                            <div class="mt-2 text-xs text-gray-500">
+                                <p><span class="font-bold">${idLabel}:</span> ${idValue}</p>
+                                <p><span class="font-bold">Issued:</span> 2024-2025</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 w-full bg-yellow-400 h-2"></div>
+                </div>
+                <button onclick="window.print()" class="mt-4 bg-gray-800 text-white px-4 py-2 rounded no-print">Print Now</button>
+                <button onclick="this.parentElement.classList.add('hidden')" class="mt-4 ml-2 text-red-600 underline no-print">Close</button>
+            `;
+            container.classList.remove('hidden');
+        }
+
+        // --- STUDENT RESULT RENDER ---
+        function renderStudentResult(data) {
+            // Metadata
+            document.getElementById('student-meta').innerHTML = `
+                <div><p class="text-gray-500 text-sm">Student Name:</p><p class="font-bold text-lg border-b border-gray-300">${data.Name}</p></div>
+                <div><p class="text-gray-500 text-sm">Father's Name:</p><p class="font-bold text-lg border-b border-gray-300">${data.FatherName}</p></div>
+                <div><p class="text-gray-500 text-sm">Class / Group:</p><p class="font-bold border-b border-gray-300">${data.Class}</p></div>
+                <div><p class="text-gray-500 text-sm">Seat Number:</p><p class="font-bold border-b border-gray-300">${data.SeatNo}</p></div>
+            `;
+
+            const tbody = document.getElementById('marksBody');
+            tbody.innerHTML = '';
+            const ignore = ['Name','FatherName','Class','SeatNo','Result','Total','SNo', 'GrNo', 'GRNo', 'Caste', 'Percentage', 'Grade', 'Position'];
+            
+            let subjectCount = 0;
+            Object.keys(data).forEach(key => {
+                if(!ignore.includes(key) && data[key]) {
+                    subjectCount++;
+                    let dName = key.replace(/([A-Z])/g, ' $1').trim(); // Add spaces to CamelCase
+                    if(key === 'GScience') dName = 'G. Science';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="border border-gray-300 p-2 capitalize">${dName}</td>
+                            <td class="border border-gray-300 p-2 text-right text-gray-500">100</td>
+                            <td class="border border-gray-300 p-2 text-right font-bold">${data[key]}</td>
+                        </tr>`;
+                }
+            });
+
+            document.getElementById('rMaxTotal').innerText = subjectCount * 100;
+            document.getElementById('rTotal').innerText = data.Total || '--';
+            
+            const resText = data.Result || 'PASS';
+            const resEl = document.getElementById('rResult');
+            resEl.innerText = resText;
+            resEl.className = resText.toLowerCase().includes('fail') ? "text-2xl font-bold text-red-600" : "text-2xl font-bold text-green-600";
+        }
+
+        // --- PUBLIC FACULTY LIST ---
+        function loadPublicFaculty() {
+            fetch(`${API_URL}?action=adminGetTeachers`, { method: 'POST', body: JSON.stringify({action: 'adminGetTeachers'})})
+            .then(res => res.json())
+            .then(json => {
+                if(json.success) {
+                    const grid = document.getElementById('public-faculty-list');
+                    grid.innerHTML = json.data.map(t => `
+                        <div class="bg-white p-4 rounded-lg shadow border border-gray-200 text-center hover:shadow-xl transition">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" class="w-20 h-20 rounded-full mx-auto mb-3 bg-gray-100 p-2">
+                            <h4 class="font-bold text-gray-800">${t.Name}</h4>
+                            <p class="text-sm text-green-600 font-semibold">${t.Designation}</p>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // --- TEACHER EDIT LOGIC (Same as before) ---
+        let editingSeatNo = null;
+        function teacherSearchStudent() {
+            const seat = document.getElementById('teacher-seat-input').value;
+            if(!seat) return;
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentResult', seatNo: seat }) })
+            .then(res => res.json())
+            .then(json => {
+                if(json.success) {
+                    const s = json.data;
+                    editingSeatNo = s.SeatNo;
+                    document.getElementById('teacher-editor').classList.remove('hidden');
+                    document.getElementById('edit-student-name').innerText = `${s.Name} (${s.SeatNo})`;
+                    const container = document.getElementById('edit-fields');
+                    container.innerHTML = '';
+                    const ignore = ['Name','FatherName','Class','SeatNo','SNo', 'GrNo', 'GRNo'];
+                    Object.keys(s).forEach(key => {
+                        if(!ignore.includes(key)) {
+                            container.innerHTML += `<div><label class="text-xs font-bold text-gray-500">${key}</label><input type="text" data-subject="${key}" value="${s[key]}" class="w-full border p-2 rounded"></div>`;
+                        }
+                    });
+                } else alert('Student not found');
+            });
+        }
+
+        function saveStudentResult() {
+            const inputs = document.querySelectorAll('#edit-fields input');
+            let updates = {};
+            inputs.forEach(inp => updates[inp.getAttribute('data-subject')] = inp.value);
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStudentResult', seatNo: editingSeatNo, updates: updates }) })
+            .then(res => res.json()).then(json => { alert(json.message); if(json.success) document.getElementById('teacher-editor').classList.add('hidden'); });
+        }
+
+        // --- ADMIN & SLIDER & DASHBOARD (Boilerplate) ---
+        function adminManageTeacher(mode) {
+            const id = document.getElementById('admin-t-id').value;
+            const pass = document.getElementById('admin-t-pass').value;
+            const name = document.getElementById('admin-t-name').value;
+            const desig = document.getElementById('admin-t-desig').value;
+            if(!id || !pass) { alert("ID and Password Required"); return; }
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'adminUpdateTeacher', mode: mode, teacherID: id, password: pass, name: name, designation: desig }) })
+            .then(res => res.json()).then(json => { alert(json.message); if(json.success) loadAdminTeacherList(); });
+        }
+        function loadAdminTeacherList() {
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'adminGetTeachers' }) })
+            .then(res => res.json()).then(json => {
+                if(json.success) document.getElementById('admin-teacher-list').innerHTML = `<table class="w-full text-sm text-left"><tr class="bg-gray-100"><th>ID</th><th>Pass</th><th>Name</th><th>Desig</th></tr>` + json.data.map(t => `<tr><td class="p-2 border">${t.TeacherID}</td><td class="p-2 border">${t.Password}</td><td class="p-2 border">${t.Name}</td><td class="p-2 border">${t.Designation}</td></tr>`).join('') + `</table>`;
+            });
+        }
         function startSlider() {
             let slideIndex = 0;
             const slides = document.getElementsByClassName("slide");
@@ -311,160 +563,20 @@
             }
             showSlides();
         }
-
         function loadDashboard() {
-            fetch(`${API_URL}?action=getDashboardStats`)
-            .then(res => res.json())
-            .then(json => {
+            fetch(`${API_URL}?action=getDashboardStats`).then(res => res.json()).then(json => {
                 if(json.success) {
-                    const notifDiv = document.getElementById('notification-area');
-                    notifDiv.innerHTML = json.data.notifications.map(n => 
-                        `<div class="border-b py-2 text-sm text-gray-700 flex"><i data-lucide="chevron-right" class="w-4 h-4 text-green-600 mr-2"></i> ${n}</div>`
-                    ).join('');
-                    lucide.createIcons();
+                    document.getElementById('notification-area').innerHTML = json.data.notifications.map(n => `<div class="border-b py-2 text-sm"><i data-lucide="chevron-right" class="w-4 inline"></i> ${n}</div>`).join('');
                     createPieChart('teacherChart', [json.data.teachers.present, json.data.teachers.leave]);
                     createPieChart('studentChart', [json.data.students.present, json.data.students.leave]);
                 }
-            });
+            }).catch(e => console.log("Dashboard fetch error"));
         }
-
-        function createPieChart(canvasId, data) {
-            const ctx = document.getElementById(canvasId);
+        function createPieChart(id, data) {
+            const ctx = document.getElementById(id);
             if(!ctx) return;
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Present', 'On Leave'],
-                    datasets: [{ data: data, backgroundColor: ['#166534', '#ef4444'], borderWidth: 0 }]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-            });
-        }
-
-        // --- Result Logic ---
-        function fetchStudents() {
-            fetch(`${API_URL}?action=getStudentData`)
-            .then(res => res.json())
-            .then(json => {
-                if(json.success) allStudents = json.data;
-            });
-        }
-
-        function searchStudent() {
-            const input = document.getElementById('searchInput').value.trim();
-            const errorMsg = document.getElementById('errorMsg');
-            const loadingMsg = document.getElementById('loadingMsg');
-
-            if(!input) return;
-
-            if(allStudents.length === 0) {
-                loadingMsg.classList.remove('hidden');
-                fetch(`${API_URL}?action=getStudentData`)
-                .then(res => res.json())
-                .then(json => {
-                    loadingMsg.classList.add('hidden');
-                    if(json.success) {
-                        allStudents = json.data;
-                        performSearch(input);
-                    }
-                });
-                return;
-            }
-            performSearch(input);
-        }
-
-        function performSearch(input) {
-            // Find student matching SeatNo (Sanitized Key: SeatNo)
-            const s = allStudents.find(st => String(st.SeatNo).trim() === input);
-            
-            if(s) {
-                document.getElementById('search-container').classList.add('hidden');
-                document.getElementById('result-container').classList.remove('hidden');
-                document.getElementById('errorMsg').classList.add('hidden');
-                
-                // Populate Metadata (Sanitized Keys)
-                document.getElementById('rName').innerText = s.Name || '--';
-                document.getElementById('rFather').innerText = s.FatherName || '--';
-                document.getElementById('rClass').innerText = s.Class || '--';
-                document.getElementById('rSeat').innerText = s.SeatNo || '--';
-                document.getElementById('rTotal').innerText = s.Total || '--';
-                document.getElementById('rGRNo').innerText = s.GrNo || s.GRNo || '--';
-                
-                // Result Status
-                const resultTxt = s.Result || 'PASS';
-                const resDiv = document.getElementById('rResult');
-                resDiv.innerText = resultTxt;
-                resDiv.className = resultTxt.toLowerCase().includes('fail') ? "text-2xl font-bold text-red-600" : "text-2xl font-bold text-green-600";
-
-                // Generate Table
-                const tbody = document.getElementById('marksBody');
-                tbody.innerHTML = '';
-                
-                // Fields to EXCLUDE from Marks Table
-                const ignore = ['Name','FatherName','Class','SeatNo','Result','Total','SNo', 'GrNo', 'GRNo', 'Caste', 'Percentage', 'Grade', 'Position'];
-                
-                let subjectCount = 0; 
-                Object.keys(s).forEach(key => {
-                    if(!ignore.includes(key) && s[key]) {
-                        subjectCount++; 
-                        
-                        // FORMATTING: Make sanitized keys readable again
-                        let displayName = key;
-                        if(key === 'SocialStudies') displayName = 'Social Studies';
-                        if(key === 'GScience') displayName = 'G. Science';
-                        
-                        tbody.innerHTML += `
-                            <tr>
-                                <td class="border border-gray-300 p-2 capitalize">${displayName}</td>
-                                <td class="border border-gray-300 p-2 text-right text-gray-500">100</td>
-                                <td class="border border-gray-300 p-2 text-right font-bold">${s[key]}</td>
-                            </tr>`;
-                    }
-                });
-                
-                document.getElementById('rMaxTotal').innerText = subjectCount * 100;
-
-            } else {
-                const errorMsg = document.getElementById('errorMsg');
-                errorMsg.innerText = "Record not found. Check Seat Number.";
-                errorMsg.classList.remove('hidden');
-            }
-        }
-
-        function resetSearch() {
-            document.getElementById('result-container').classList.add('hidden');
-            document.getElementById('search-container').classList.remove('hidden');
-            document.getElementById('searchInput').value = '';
-            document.getElementById('errorMsg').classList.add('hidden');
-        }
-
-        // --- Faculty Logic ---
-        function loadTeachers() {
-            const grid = document.getElementById('teachers-grid');
-            if(grid.children.length > 0) return; 
-
-            document.getElementById('teacher-loader').classList.remove('hidden');
-
-            fetch(`${API_URL}?action=getTeacherData`)
-            .then(res => res.json())
-            .then(json => {
-                document.getElementById('teacher-loader').classList.add('hidden');
-                if(json.success) {
-                    json.data.forEach(t => {
-                        grid.innerHTML += `
-                            <div class="bg-white p-4 rounded shadow border-t-4 border-green-600">
-                                <h3 class="font-bold text-lg">${t.Name}</h3>
-                                <p class="text-sm text-green-700 font-semibold">${t.Designation}</p>
-                                <p class="text-xs text-gray-500 mt-1">${t.Qualification}</p>
-                            </div>
-                        `;
-                    });
-                }
-            });
+            new Chart(ctx, { type: 'doughnut', data: { labels: ['Present', 'Leave'], datasets: [{ data: data, backgroundColor: ['#166534', '#ef4444'] }] } });
         }
     </script>
 </body>
 </html>
-
-
-
