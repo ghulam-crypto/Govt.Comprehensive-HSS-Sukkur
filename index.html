@@ -11,8 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Dancing+Script:wght@700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
     
     <style>
-        :root { --school-green: #166534; --school-gold: #fbbf24; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f3f4f6; }
+        :root { --school-green: #29367d; --school-gold: #fbbf24; }
+        
+        /* Modified body background to be transparent so the slideshow is visible */
+        body { font-family: 'Segoe UI', sans-serif; background: transparent; }
         
         /* Helpers */
         .slide { display: none; animation: fade 1.5s; }
@@ -29,11 +31,57 @@
         /* Auto-adjust Text Logic */
         .fit-text { display: inline-block; white-space: nowrap; }
 
+        /* ===================== ADDED SLIDESHOW CSS ===================== */
+        #bg-slideshow {
+            position: fixed;
+            inset: 0;
+            z-index: -10;
+            overflow: hidden;
+            display: none;
+            background: #f3f4f6; /* Fallback color */
+        }
+
+        .bg-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.2);
+            transition: opacity 1.5s ease;
+        }
+
+        .bg-slide.active { opacity: 1; }
+
+        .bg-slide.zoom {
+            animation-name: zoomInOut;
+            animation-timing-function: ease-in-out;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes zoomInOut {
+            0%   { transform: scale(1.2); }
+            50%  { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+
+        #bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(243, 244, 246, 0.85); /* Semi-transparent overlay to match original theme */
+            z-index: -9;
+            display: none;
+        }
+        /* ===================== END SLIDESHOW CSS ===================== */
+
         /* --- STRICT PRINTING RULES --- */
         @media print {
             /* Hide EVERYTHING by default */
             body * { visibility: hidden; }
             
+            /* Hide Background Slideshow on Print */
+            #bg-slideshow, #bg-overlay { display: none !important; }
+
             /* Only show the element with class 'print-now' and its children */
             .print-now, .print-now * { visibility: visible; }
             
@@ -58,6 +106,9 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
+
+    <div id="bg-slideshow"></div>
+    <div id="bg-overlay"></div>
 
     <header class="bg-green-900 text-white shadow-xl sticky top-0 z-50 no-print">
         <div class="container mx-auto px-4 py-3">
@@ -86,7 +137,7 @@
         </div>
     </header>
 
-    <main class="flex-grow container mx-auto px-4 py-6">
+    <main class="flex-grow container mx-auto px-4 py-6 relative z-10">
 
         <div id="section-home" class="page-section space-y-8">
             <div class="relative h-64 md:h-96 rounded-2xl overflow-hidden shadow-2xl border-b-4 border-green-600 group">
@@ -291,14 +342,11 @@
                 <div class="bg-white p-6 rounded shadow mb-4">
                     <h3 class="font-bold mb-4">Update Result (Class-wise)</h3>
                     <div class="flex gap-2 mb-4">
-                         <input type="text" id="res-class" placeholder="Class & Section (e.g. 12-B)" class="border p-2 rounded w-64">
-                         <button onclick="alert('Fetching class list for grading...')" class="bg-blue-600 text-white px-4 rounded">Load Class</button>
+                         <input type="text" id="res-class" placeholder="Class & Section (e.g. VI-A)" class="border p-2 rounded w-64">
+                         <button onclick="loadGradingList()" class="bg-blue-600 text-white px-4 rounded">Load Class</button>
                     </div>
-                    <p class="text-xs text-gray-500">Or search individual student:</p>
-                    <div class="flex gap-2 mt-2">
-                        <input type="text" placeholder="Seat Number" class="border p-2 rounded">
-                        <button class="bg-gray-600 text-white px-4 rounded">Search</button>
-                    </div>
+                    
+                    <div id="grading-area" class="mt-4"></div>
                 </div>
             </div>
         </div>
@@ -371,17 +419,17 @@
             <div class="bg-white p-6 rounded shadow mt-4 border-l-4 border-blue-600">
                 <h3 class="font-bold mb-4 text-lg">Post News / Event / Gallery</h3>
                 <div class="grid grid-cols-1 gap-4 mb-4">
-                    <input type="text" placeholder="Title of News or Event" class="border p-2 rounded w-full">
-                    <textarea placeholder="Description or Details" class="border p-2 rounded w-full h-20"></textarea>
+                    <input id="news-title" type="text" placeholder="Title of News or Event" class="border p-2 rounded w-full">
+                    <textarea id="news-desc" placeholder="Description or Details" class="border p-2 rounded w-full h-20"></textarea>
                     
                     <div class="flex gap-4">
                         <div class="flex-1">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Upload Image/Video</label>
-                            <input type="file" class="border p-2 rounded w-full bg-gray-50">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Image/Video Link</label>
+                            <input id="news-img" type="text" placeholder="Paste Image Link (http://...)" class="border p-2 rounded w-full">
                         </div>
                         <div class="flex-1">
                             <label class="block text-xs font-bold text-gray-500 mb-1">Category</label>
-                            <select class="border p-2 rounded w-full">
+                            <select id="news-cat" class="border p-2 rounded w-full">
                                 <option>Homepage News</option>
                                 <option>Gallery Image</option>
                                 <option>Event Video</option>
@@ -389,7 +437,7 @@
                         </div>
                     </div>
                 </div>
-                <button onclick="alert('News/Event Posted Successfully!')" class="bg-blue-600 text-white px-4 py-2 rounded font-bold">Post to Website</button>
+                <button onclick="postNews()" class="bg-blue-600 text-white px-4 py-2 rounded font-bold">Post to Website</button>
             </div>
 
             <div class="bg-white p-6 rounded shadow mt-4">
@@ -406,7 +454,7 @@
 
     </main>
 
-    <footer class="bg-gray-800 text-white py-6 mt-auto no-print">
+    <footer class="bg-gray-800 text-white py-6 mt-auto no-print relative z-10">
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
             <div class="text-sm">© 2026 Govt Comprehensive HSS Sukkur. All Rights Reserved.</div>
             <div class="flex items-center gap-3 mt-4 md:mt-0">
@@ -539,9 +587,9 @@
         </div>
     </div>
 
-    <div id="loginModal" class="fixed inset-0 modal hidden flex items-center justify-center z-[100] no-print">
+    <div id="loginModal" class="fixed inset-0 modal hidden flex items-center justify-center z-[100] no-print bg-black/50">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 relative">
-            <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400">✕</button>
+            <button onclick="document.getElementById('loginModal').classList.add('hidden'); resumeSlideshow();" class="absolute top-4 right-4 text-gray-400">✕</button>
             <h2 class="text-xl font-bold text-center text-green-900 mb-6">Portal Login</h2>
             <div class="flex bg-gray-100 p-1 rounded mb-4">
                 <button onclick="setRole('student')" id="tab-student" class="flex-1 py-1 rounded bg-white shadow text-sm font-bold">Student</button>
@@ -577,7 +625,11 @@
         }
 
         // --- LOGIN SYSTEM ---
-        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+        function openLoginModal() { 
+            document.getElementById('loginModal').classList.remove('hidden'); 
+            pauseSlideshow(); // Pause slideshow when modal opens
+        }
+        
         function setRole(r) {
             currentRole = r;
             ['student','staff','admin'].forEach(x => {
@@ -603,6 +655,7 @@
                 if(res.success) {
                     currentUser = res;
                     document.getElementById('loginModal').classList.add('hidden');
+                    resumeSlideshow(); // Resume on success
                     document.getElementById('btn-login').classList.add('hidden');
                     document.getElementById('btn-logout').classList.remove('hidden');
                     
@@ -721,6 +774,150 @@
             .then(res => alert(res.message));
         }
 
+        // ============================================
+        //  NEW TEACHER GRADING LOGIC (Subject-Wise)
+        // ============================================
+
+        const SUBJECT_KEYS = [
+          "English", "Mathematics", "Social Studies", "Sindhi", "Islamiat", 
+          "G.Science", "Urdu", "Arabic", "Physics", "Biology", "Chemistry", "Computer"
+        ];
+
+        function loadGradingList() {
+            const cls = document.getElementById('res-class').value;
+            const area = document.getElementById('grading-area');
+            
+            if(!cls) return alert("Please enter a Class name.");
+
+            area.innerHTML = '<div class="p-4 text-center">Fetching student list...</div>';
+            
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentsByClass', cls: cls })})
+            .then(r => r.json())
+            .then(res => {
+                if(res.success && res.data.length > 0) {
+                    renderGradingTable(res.data);
+                } else {
+                    area.innerHTML = '<div class="p-4 text-center text-red-500">No students found for this class.</div>';
+                }
+            })
+            .catch(e => {
+                area.innerHTML = '<div class="p-4 text-center text-red-500">Error connecting to database.</div>';
+            });
+        }
+
+        function renderGradingTable(students) {
+            const area = document.getElementById('grading-area');
+            
+            let html = `
+            <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left border-collapse">
+                <thead class="bg-gray-100 text-gray-700 uppercase font-bold text-xs">
+                    <tr>
+                        <th class="p-2 border sticky left-0 bg-gray-100">Seat/Name</th>
+                        ${SUBJECT_KEYS.map(sub => `<th class="p-2 border min-w-[80px]">${sub}</th>`).join('')}
+                        <th class="p-2 border bg-yellow-50">Total</th>
+                        <th class="p-2 border">Result</th>
+                        <th class="p-2 border sticky right-0 bg-gray-100">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+            `;
+
+            students.forEach(s => {
+                const subjectInputs = SUBJECT_KEYS.map(sub => {
+                    const val = s[sub] || ""; 
+                    return `
+                        <td class="p-2 border">
+                            <input type="number" 
+                                   data-seat="${s.SeatNo}" 
+                                   data-subject="${sub}"
+                                   value="${val}" 
+                                   oninput="autoCalculateTotal('${s.SeatNo}')"
+                                   class="w-16 p-1 border rounded text-center subj-input-${s.SeatNo}">
+                        </td>
+                    `;
+                }).join('');
+
+                html += `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-2 border font-bold sticky left-0 bg-white">
+                        <div>${s.SeatNo}</div>
+                        <div class="text-xs font-normal text-gray-500">${s.Name}</div>
+                    </td>
+                    ${subjectInputs}
+                    <td class="p-2 border bg-yellow-50">
+                        <input type="number" id="total-${s.SeatNo}" value="${s.Total || 0}" class="w-16 p-1 font-bold bg-transparent text-center" readonly>
+                    </td>
+                    <td class="p-2 border">
+                        <input type="text" id="result-${s.SeatNo}" value="${s.Result || 'Pass'}" class="w-16 p-1 border rounded text-center">
+                    </td>
+                    <td class="p-2 border sticky right-0 bg-white">
+                        <button onclick="saveStudentResult('${s.SeatNo}')" class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">Save</button>
+                    </td>
+                </tr>
+                `;
+            });
+
+            html += `</tbody></table></div>`;
+            area.innerHTML = html;
+        }
+
+        function autoCalculateTotal(seatNo) {
+            const inputs = document.querySelectorAll(`.subj-input-${seatNo}`);
+            let sum = 0;
+            inputs.forEach(input => {
+                const val = parseFloat(input.value);
+                if(!isNaN(val)) sum += val;
+            });
+            document.getElementById(`total-${seatNo}`).value = sum;
+        }
+
+        function saveStudentResult(seatNo) {
+            const btn = document.querySelector(`button[onclick="saveStudentResult('${seatNo}')"]`);
+            const originalText = btn.innerText;
+            btn.innerText = "...";
+            
+            const inputs = document.querySelectorAll(`.subj-input-${seatNo}`);
+            let marksObj = {};
+            
+            inputs.forEach(input => {
+                const subject = input.getAttribute('data-subject');
+                marksObj[subject] = input.value;
+            });
+
+            const totalVal = document.getElementById(`total-${seatNo}`).value;
+            const resultVal = document.getElementById(`result-${seatNo}`).value;
+
+            fetch(API_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: 'updateStudentResult', 
+                    seatNo: seatNo, 
+                    marks: marksObj,
+                    result: resultVal
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.success) {
+                    alert("Saved! New Total: " + totalVal);
+                    btn.innerText = "Saved";
+                } else {
+                    alert(res.message);
+                    btn.innerText = "Retry";
+                }
+                setTimeout(() => btn.innerText = originalText, 2000);
+            })
+            .catch(e => {
+                alert("Connection Failed");
+                btn.innerText = originalText;
+            });
+        }
+
+        // ============================================
+        //  END TEACHER GRADING LOGIC
+        // ============================================
+
         // --- GR PORTAL ---
         function searchGRData() {
             const q = document.getElementById('gr-search').value;
@@ -750,6 +947,49 @@
             });
         }
         
+        // --- ADMIN: POST NEWS ---
+        function postNews() {
+            const t = document.getElementById('news-title').value;
+            const d = document.getElementById('news-desc').value;
+            const c = document.getElementById('news-cat').value;
+            const i = document.getElementById('news-img').value || "https://via.placeholder.com/150";
+
+            if(!t) return alert("Title required");
+
+            const btn = document.querySelector('button[onclick="postNews()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Posting...";
+            btn.disabled = true;
+
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'postNews',
+                    title: t,
+                    description: d,
+                    category: c,
+                    image: i
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                alert(res.message);
+                btn.innerText = originalText;
+                btn.disabled = false;
+                if(res.success) {
+                    // clear inputs
+                    document.getElementById('news-title').value = "";
+                    document.getElementById('news-desc').value = "";
+                    document.getElementById('news-img').value = "";
+                }
+            })
+            .catch(e => {
+                alert("Error posting news");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+
         // --- UPDATED PRINTING LOGIC ---
         function printArea(elementId) {
             // 1. Remove 'print-now' from any previously selected element
@@ -819,9 +1059,78 @@
             .then(r=>r.json()).then(res => alert(res.message));
         }
 
+        // ============================================
+        //  BACKGROUND SLIDESHOW LOGIC
+        // ============================================
+        const FALLBACK_SLIDES = [
+            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 12000 },
+            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 18000 },
+            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 15000 }
+        ];
+
+        let bgSlides = [];
+        let bgCurrentIndex = 0;
+        let bgTimer = null;
+        let bgPaused = false;
+
+        function loadSlides() {
+            bgSlides = FALLBACK_SLIDES;
+            initSlideshow();
+        }
+
+        function initSlideshow() {
+            const container = document.getElementById("bg-slideshow");
+            container.innerHTML = "";
+
+            bgSlides.forEach(slide => {
+                const div = document.createElement("div");
+                div.className = "bg-slide";
+                div.style.backgroundImage = `url('${slide.image}')`;
+                div.dataset.duration = slide.duration || 12000;
+                container.appendChild(div);
+            });
+
+            container.style.display = "block";
+            document.getElementById("bg-overlay").style.display = "block";
+            showBgSlide(0);
+        }
+
+        function showBgSlide(index) {
+            if (bgPaused) return;
+
+            const slideEls = document.querySelectorAll(".bg-slide");
+            slideEls.forEach(s => {
+                s.classList.remove("active", "zoom");
+                s.style.animationDuration = "";
+            });
+
+            const active = slideEls[index];
+            if(active) {
+                const duration = active.dataset.duration;
+                active.classList.add("active", "zoom");
+                active.style.animationDuration = duration + "ms";
+
+                clearTimeout(bgTimer);
+                bgTimer = setTimeout(() => {
+                    bgCurrentIndex = (index + 1) % slideEls.length;
+                    showBgSlide(bgCurrentIndex);
+                }, duration);
+            }
+        }
+
+        function pauseSlideshow() { bgPaused = true; }
+        
+        function resumeSlideshow() { 
+            bgPaused = false; 
+            showBgSlide(bgCurrentIndex);
+        }
+
         // --- INITIALIZATION ---
         window.onload = function() {
-            // Slider
+            // 1. Initialize Background Slideshow
+            loadSlides();
+
+            // 2. Initialize School Header Slider
             let slideIndex = 0;
             const slides = document.querySelectorAll('.slide');
             if(slides.length > 0) {
@@ -832,7 +1141,7 @@
                 }, 4000);
             }
 
-            // Charts Config - Compact
+            // 3. Charts Config - Compact
             const chartConfig = (id, data, color) => {
                 const ctx = document.getElementById(id);
                 if(ctx) {
@@ -860,7 +1169,7 @@
             chartConfig('studentChart', [85, 15], '#166534'); // School Green
             chartConfig('teacherChart', [96, 4], '#1e40af'); // Blue
 
-            // Load Dashboard
+            // 4. Load Dashboard Data
             fetch(`${API_URL}?action=getDashboardStats`)
             .then(r=>r.json())
             .then(res=>{
@@ -873,4 +1182,3 @@
     </script>
 </body>
 </html>
-
