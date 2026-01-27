@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Govt. Comprehensive HSS Sukkur</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -13,94 +14,54 @@
     <style>
         :root { --school-green: #29367d; --school-gold: #fbbf24; }
         
-        /* Modified body background to be transparent so the slideshow is visible */
+        /* Body transparent for background slideshow visibility */
         body { font-family: 'Segoe UI', sans-serif; background: transparent; }
         
-        /* Helpers */
-        .slide { display: none; animation: fade 1.5s; }
-        .slide.active { display: block; }
-        @keyframes fade { from {opacity: .4} to {opacity: 1} }
+        /* Utility Classes */
         .hidden { display: none !important; }
         .watermark { position: absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-45deg); opacity:0.08; pointer-events:none; font-size:4rem; font-weight:900; color:#166534; white-space:nowrap; }
-
+        
         /* Fonts */
         .font-id-body { font-family: 'Outfit', sans-serif; }
         .font-signature { font-family: 'Dancing Script', cursive; }
         .font-barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 48px; }
 
-        /* Auto-adjust Text Logic */
-        .fit-text { display: inline-block; white-space: nowrap; }
+        /* Header Slideshow Animation */
+        .slide { display: none; animation: fade 1.5s; }
+        .slide.active { display: block; }
+        @keyframes fade { from {opacity: .4} to {opacity: 1} }
 
-        /* ===================== ADDED SLIDESHOW CSS ===================== */
+        /* Background Slideshow CSS */
         #bg-slideshow {
-            position: fixed;
-            inset: 0;
-            z-index: -10;
-            overflow: hidden;
-            display: none;
-            background: #f3f4f6; /* Fallback color */
+            position: fixed; inset: 0; z-index: -10; overflow: hidden; display: none; background: #f3f4f6;
         }
-
         .bg-slide {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transform: scale(1.2);
-            transition: opacity 1.5s ease;
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            opacity: 0; transform: scale(1.2); transition: opacity 1.5s ease;
         }
-
         .bg-slide.active { opacity: 1; }
-
         .bg-slide.zoom {
-            animation-name: zoomInOut;
-            animation-timing-function: ease-in-out;
-            animation-fill-mode: forwards;
+            animation-name: zoomInOut; animation-duration: 12s; animation-timing-function: ease-in-out; animation-fill-mode: forwards;
         }
-
         @keyframes zoomInOut {
-            0%   { transform: scale(1.2); }
-            50%  { transform: scale(1); }
+            0%    { transform: scale(1.2); }
+            50%   { transform: scale(1); }
             100% { transform: scale(1.15); }
         }
-
         #bg-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(243, 244, 246, 0.85); /* Semi-transparent overlay to match original theme */
-            z-index: -9;
-            display: none;
+            position: fixed; inset: 0; background: rgba(243, 244, 246, 0.85); z-index: -9; display: none;
         }
-        /* ===================== END SLIDESHOW CSS ===================== */
 
-        /* --- STRICT PRINTING RULES --- */
+        /* PRINTING RULES (Crucial for Reports/ID Cards) */
         @media print {
-            /* Hide EVERYTHING by default */
             body * { visibility: hidden; }
+            #bg-slideshow, #bg-overlay, header, footer, .no-print, .page-section { display: none !important; }
             
-            /* Hide Background Slideshow on Print */
-            #bg-slideshow, #bg-overlay { display: none !important; }
-
-            /* Only show the element with class 'print-now' and its children */
+            /* Only show elements with 'print-now' class */
             .print-now, .print-now * { visibility: visible; }
-            
-            /* Position the print-now element at the very top-left */
             .print-now { 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 100%; 
-                margin: 0; 
-                padding: 0;
-                background: white; 
-                z-index: 9999;
+                position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; z-index: 9999;
             }
-            
-            /* Hide buttons/controls inside the printable area */
-            .no-print { display: none !important; }
-            
-            /* Ensure colors print correctly */
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
@@ -127,11 +88,11 @@
                     </div>
                 </div>
                 <nav class="flex gap-2 text-xs md:text-sm font-bold mt-2 md:mt-0 overflow-x-auto">
-                    <button onclick="showSection('home')" class="nav-btn hover:text-yellow-400">Home</button>
-                    <button onclick="showSection('gallery')" class="nav-btn hover:text-yellow-400">Gallery</button>
-                    <button onclick="showSection('academics')" class="nav-btn hover:text-yellow-400">Academics</button>
-                    <button onclick="openLoginModal()" id="btn-login" class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-400">Login</button>
-                    <button onclick="logout()" id="btn-logout" class="hidden bg-red-600 text-white px-3 py-1 rounded">Logout</button>
+                    <button onclick="showSection('home')" class="nav-btn hover:text-yellow-400 text-white">Home</button>
+                    <button onclick="showSection('gallery')" class="nav-btn hover:text-yellow-400 text-white">Gallery</button>
+                    <button onclick="showSection('academics')" class="nav-btn hover:text-yellow-400 text-white">Academics</button>
+                    <button onclick="openLoginModal()" id="btn-login" class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-400 transition">Login</button>
+                    <button onclick="logout()" id="btn-logout" class="hidden bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">Logout</button>
                 </nav>
             </div>
         </div>
@@ -157,182 +118,172 @@
                     <i data-lucide="bar-chart-2" class="w-5 h-5 mr-2 text-green-700"></i> Daily Attendance
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
                     <div class="bg-green-50 rounded-xl p-4 flex items-center shadow-sm border border-green-100">
-                        <div class="w-1/3 relative h-24">
-                            <canvas id="studentChart"></canvas>
-                        </div>
+                        <div class="w-1/3 relative h-24"><canvas id="studentChart"></canvas></div>
                         <div class="w-2/3 pl-6 border-l border-green-200">
                             <h4 class="text-xs font-bold text-green-800 uppercase tracking-widest">Students</h4>
                             <div class="flex items-baseline gap-2 mt-1">
                                 <span class="text-3xl font-extrabold text-green-900">85%</span>
                                 <span class="text-xs text-green-600 font-medium">Present</span>
                             </div>
-                            <p class="text-[10px] text-gray-500 mt-1">Total Strength: 1,240</p>
                         </div>
                     </div>
-
                     <div class="bg-blue-50 rounded-xl p-4 flex items-center shadow-sm border border-blue-100">
-                        <div class="w-1/3 relative h-24">
-                            <canvas id="teacherChart"></canvas>
-                        </div>
+                        <div class="w-1/3 relative h-24"><canvas id="teacherChart"></canvas></div>
                         <div class="w-2/3 pl-6 border-l border-blue-200">
                             <h4 class="text-xs font-bold text-blue-800 uppercase tracking-widest">Staff</h4>
                             <div class="flex items-baseline gap-2 mt-1">
                                 <span class="text-3xl font-extrabold text-blue-900">96%</span>
                                 <span class="text-xs text-blue-600 font-medium">Present</span>
                             </div>
-                            <p class="text-[10px] text-gray-500 mt-1">Total Staff: 85</p>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <div class="grid md:grid-cols-3 gap-6">
                 <div class="md:col-span-2 grid md:grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-600 flex gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-600 flex gap-4 items-center">
                         <img src="https://lh3.googleusercontent.com/d/10KflD0cRnBK4C4bDulj_Y0OBxdpYr852" class="w-16 h-16 rounded-full">
-                        <div><h3 class="font-bold">Senior Principal</h3><p class="text-sm text-gray-500">Abdul Ghafoor Arain</p></div>
+                        <div><h3 class="font-bold text-gray-800">Senior Principal</h3><p class="text-sm text-gray-500">Abdul Ghafoor Arain</p></div>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-yellow-500 flex gap-4">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" class="w-16 h-16 rounded-full">
-                        <div><h3 class="font-bold">Principal</h3><p class="text-sm text-gray-500">Abdul Wahab</p></div>
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-yellow-500 flex gap-4 items-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" class="w-16 h-16 rounded-full border border-gray-200">
+                        <div><h3 class="font-bold text-gray-800">Principal</h3><p class="text-sm text-gray-500">Abdul Wahab Baloch</p></div>
                     </div>
                 </div>
                 <div class="bg-white rounded-lg shadow overflow-hidden">
-                    <div class="bg-red-600 text-white p-2 font-bold flex items-center"><i data-lucide="bell" class="w-4 h-4 mr-2"></i> Notice Board</div>
-                    <div id="notice-board" class="p-4 h-32 overflow-y-auto text-sm">Loading...</div>
+                    <div class="bg-red-600 text-white p-3 font-bold flex items-center"><i data-lucide="bell" class="w-4 h-4 mr-2"></i> Notice Board</div>
+                    <div id="notice-board" class="p-4 h-32 overflow-y-auto text-sm space-y-2 text-gray-600">
+                        <div class="border-b pb-1">➢ Welcome to New Session 2026</div>
+                        <div class="border-b pb-1">➢ Sports Week starting next Monday</div>
+                        <div class="border-b pb-1">➢ Result Announcement Date</div>
+                    </div>
                 </div>
             </div>
-
-            <div class="bg-white p-2 rounded-xl shadow-md">
+            
+             <div class="bg-white p-2 rounded-xl shadow-md">
                 <h3 class="font-bold text-gray-700 mb-2 px-2">School Location</h3>
-                <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d3532.1550966994587!2d68.8427197!3d27.7124972!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1769263235593!5m2!1sen!2s" 
-                        width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d3532.1550966994587!2d68.8427197!3d27.7124972!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1769263235593!5m2!1sen!2s" width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
             </div>
         </div>
 
         <div id="section-gallery" class="page-section hidden">
             <div class="flex items-center gap-3 mb-4">
-                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition" title="Go Back">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
+                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
                 <h2 class="text-2xl font-bold text-green-800">School Gallery</h2>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <img src="https://lh3.googleusercontent.com/d/1CNhh5MMo1Ks07LEUQvddU5kasZGYjYif" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
-                <img src="https://lh3.googleusercontent.com/d/15wbNoMTWczFgAP9j5BobBryp6l9supvX" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
-                <img src="https://lh3.googleusercontent.com/d/1diwpdDpgkiJQ7YZzDlk9WXUv2GOP0f84" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
-                <img src="https://lh3.googleusercontent.com/d/1pzGInepUMFbZ3ePsGp0SkLQy0hPi2OAV" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
+                <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
+                <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
+                <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
             </div>
         </div>
 
         <div id="section-academics" class="page-section hidden">
             <div class="flex items-center gap-3 mb-4">
-                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition" title="Go Back">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
+                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
                 <h2 class="text-2xl font-bold text-green-800">Academics & Admission</h2>
             </div>
-            
             <div class="bg-white p-6 rounded shadow mb-6 border-l-4 border-green-600">
                 <h3 class="font-bold text-lg mb-2">Admission Policy</h3>
-                <p class="text-gray-600 mb-4">Admissions are open for Class XI (Pre-Medical, Pre-Engineering, CS). Please visit the admin office with your Matriculation marksheet.</p>
-                <button onclick="alert('Downloading Admission Form...')" class="bg-green-700 text-white px-4 py-2 rounded flex items-center hover:bg-green-800">
-                    <i data-lucide="download" class="w-4 h-4 mr-2"></i> Download Admission Form
-                </button>
+                <p class="text-gray-600 mb-4">Admissions are open for Class XI (Pre-Medical, Pre-Engineering, CS). Please bring Matriculation Marksheet copy.</p>
+                <button onclick="alert('Downloading Admission Form...')" class="bg-green-700 text-white px-4 py-2 rounded flex items-center hover:bg-green-800"><i data-lucide="download" class="w-4 h-4 mr-2"></i> Download Form</button>
             </div>
-            <iframe src="https://calendar.google.com/calendar/embed?src=en.pk%23holiday%40group.v.calendar.google.com&ctz=Asia%2FKarachi" style="border: 0" width="100%" height="400" frameborder="0" scrolling="no"></iframe>
+            <div class="bg-white p-4 rounded shadow">
+                <h3 class="font-bold mb-2">Academic Calendar</h3>
+                <p class="text-sm text-gray-500">Google Calendar Integration Placeholder</p>
+            </div>
         </div>
 
         <div id="section-student" class="page-section hidden">
             <div class="flex justify-between items-center mb-4 no-print">
                 <div class="flex items-center gap-3">
-                    <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition" title="Go Back">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                    </button>
-                    <h2 class="text-xl font-bold">Student Result</h2>
+                    <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                    <h2 class="text-xl font-bold text-green-900">Student Portal</h2>
                 </div>
                 <div class="gap-2 flex">
-                    <button onclick="printArea('student-marksheet')" class="bg-blue-600 text-white px-3 py-1 rounded">Print Marksheet</button>
-                    <button onclick="generateCard('student')" class="bg-purple-600 text-white px-3 py-1 rounded">Print ID Card</button>
+                    <button onclick="showStudentTab('result')" class="bg-green-600 text-white px-3 py-1 rounded shadow text-sm">Result</button>
+                    <button onclick="showStudentTab('assignments')" class="bg-blue-600 text-white px-3 py-1 rounded shadow text-sm">Assignments</button>
+                    <button onclick="printArea('student-marksheet')" class="bg-gray-700 text-white px-3 py-1 rounded shadow text-sm">Print Result</button>
+                    <button onclick="generateCard('student')" class="bg-purple-600 text-white px-3 py-1 rounded shadow text-sm">ID Card</button>
                 </div>
             </div>
             
-            <div id="student-marksheet" class="bg-white rounded-none md:rounded-xl shadow-lg border border-gray-300 relative overflow-hidden p-8 min-h-[600px] max-w-4xl mx-auto mb-10">
-                <div class="watermark">Govt. Comprehensive HS School</div>
-                
-                <div class="text-center border-b-2 border-green-800 pb-4 mb-6">
-                    <div class="flex justify-center items-center gap-4 mb-2">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-gray-200">
-                            <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-10 h-10 rounded-full bg-white p-1" alt="Logo">
+            <div id="st-tab-result">
+                <div id="student-marksheet" class="bg-white rounded-none md:rounded-xl shadow-lg border border-gray-300 relative overflow-hidden p-8 min-h-[600px] max-w-4xl mx-auto mb-10">
+                    <div class="watermark">Govt. Comprehensive HS School</div>
+                    <div class="text-center border-b-2 border-green-800 pb-4 mb-6">
+                        <div class="flex justify-center items-center gap-4 mb-2">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-gray-200">
+                                <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-10 h-10 rounded-full bg-white p-1" alt="Logo">
+                            </div>
+                            <div>
+                                <h1 class="text-3xl font-extrabold text-green-900 uppercase">Govt. Comprehensive</h1>
+                                <h2 class="text-lg font-bold text-gray-700">Higher Secondary School Sukkur</h2>
+                            </div>
                         </div>
-                        <div>
-                            <h1 class="text-3xl font-extrabold text-green-900 uppercase">Govt. Comprehensive</h1>
-                            <h2 class="text-lg font-bold text-gray-700">Higher Secondary School Sukkur</h2>
-                            <p class="text-sm text-gray-500">SEMIS CODE: 418050146</p>
-                        </div>
+                        <span class="bg-black text-white px-4 py-1 rounded text-sm font-bold uppercase tracking-widest"> Official Marks certificate</span>
                     </div>
-                    <span class="bg-black text-white px-4 py-1 rounded text-sm font-bold uppercase tracking-widest"> Official Marks certificate</span>
-                </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-6 relative z-10" id="marksheet-meta"></div>
+                    <div class="grid grid-cols-2 gap-4 mb-6 relative z-10" id="marksheet-meta"></div>
 
-                <table class="w-full border-collapse border border-gray-300 text-sm relative z-10 mb-6">
-                    <thead class="bg-green-100">
-                        <tr>
-                            <th class="border border-gray-300 p-2 text-left">Subject</th>
-                            <th class="border border-gray-300 p-2 text-right">Max Marks</th>
-                            <th class="border border-gray-300 p-2 text-right">Obtained</th>
-                        </tr>
-                    </thead>
-                    <tbody id="marksheet-body"></tbody>
-                    <tfoot class="bg-gray-50 font-bold">
-                        <tr>
-                            <td class="border border-gray-300 p-2">Grand Total</td>
-                            <td class="border border-gray-300 p-2 text-right" id="marksheet-max-total">--</td>
-                            <td class="border border-gray-300 p-2 text-right text-green-800 text-lg" id="marksheet-total">--</td>
-                        </tr>
-                    </tfoot>
-                </table>
-
-                <div class="text-center mb-8 relative z-10">
-                    <span class="text-gray-600 font-medium">Result Status: </span>
-                    <span id="rResult" class="text-2xl font-bold">--</span>
-                </div>
-
-                <div class="flex justify-between items-end mt-12 relative z-10 pt-8">
-                    <div class="text-center">
-                        <div class="border-b border-black w-40 mb-1"></div>
-                        <p class="text-xs font-bold">Class Teacher</p>
+                    <table class="w-full border-collapse border border-gray-300 text-sm relative z-10 mb-6">
+                        <thead class="bg-green-100">
+                            <tr>
+                                <th class="border border-gray-300 p-2 text-left">Subject</th>
+                                <th class="border border-gray-300 p-2 text-right">Max Marks</th>
+                                <th class="border border-gray-300 p-2 text-right">Obtained</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marksheet-body"></tbody>
+                        <tfoot class="bg-gray-50 font-bold">
+                            <tr>
+                                <td class="border border-gray-300 p-2">Grand Total</td>
+                                <td class="border border-gray-300 p-2 text-right" id="marksheet-max-total">--</td>
+                                <td class="border border-gray-300 p-2 text-right text-green-800 text-lg" id="marksheet-total">--</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="text-center mb-8 relative z-10">
+                        <span class="text-gray-600 font-medium">Result Status: </span>
+                        <span id="rResult" class="text-2xl font-bold">--</span>
                     </div>
-                    <div class="text-center">
-                        <div class="border-b border-black w-40 mb-1"></div>
-                        <p class="text-xs font-bold">Senior Principal</p>
+                    <div class="flex justify-between items-end mt-12 relative z-10 pt-8">
+                        <div class="text-center"><div class="border-b border-black w-40 mb-1"></div><p class="text-xs font-bold">Class Teacher</p></div>
+                        <div class="text-center"><div class="border-b border-black w-40 mb-1"></div><p class="text-xs font-bold">Senior Principal</p></div>
                     </div>
                 </div>
+            </div>
+
+            <div id="st-tab-assignments" class="hidden">
+                 <div class="bg-white p-6 rounded shadow max-w-4xl mx-auto min-h-[400px]">
+                     <h3 class="font-bold text-lg mb-4 text-blue-800 border-b pb-2">Class Assignments</h3>
+                     <div id="student-assignment-list" class="grid gap-4">
+                         <p class="text-gray-500">Loading assignments...</p>
+                     </div>
+                 </div>
             </div>
         </div>
 
         <div id="section-teacher" class="page-section hidden">
             <div class="flex items-center gap-3 mb-4">
-                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition" title="Go Back">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
+                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
                 <h2 class="text-2xl font-bold text-green-800">Teacher Dashboard</h2>
             </div>
 
-            <div class="flex gap-4 mb-6 border-b">
-                <button onclick="showTeacherTab('attendance')" class="pb-2 border-b-2 border-green-600 font-bold">Mark Attendance</button>
-                <button onclick="showTeacherTab('result')" class="pb-2 text-gray-500">Update Results</button>
-                <button onclick="generateCard('staff')" class="ml-auto bg-purple-600 text-white px-2 py-1 rounded text-xs mb-2">My ID Card</button>
+            <div class="flex gap-4 mb-6 border-b overflow-x-auto">
+                <button onclick="showTeacherTab('attendance')" class="pb-2 border-b-2 border-green-600 font-bold whitespace-nowrap">Mark Attendance</button>
+                <button onclick="showTeacherTab('result')" class="pb-2 text-gray-500 whitespace-nowrap">Update Results</button>
+                <button onclick="showTeacherTab('assignments')" class="pb-2 text-gray-500 whitespace-nowrap">Post Assignment</button>
+                <button onclick="generateCard('staff')" class="ml-auto bg-purple-600 text-white px-2 py-1 rounded text-xs mb-2 whitespace-nowrap">My ID Card</button>
             </div>
 
             <div id="tab-attendance">
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="att-class" placeholder="Class & Section (e.g., 11-A)" class="border p-2 rounded w-64">
-                    <button onclick="loadAttendanceList()" class="bg-green-600 text-white px-4 rounded">Fetch Class</button>
+                <div class="flex gap-2 mb-4 bg-white p-4 rounded shadow">
+                    <input type="text" id="att-class" placeholder="Class (e.g. IX-A)" class="border p-2 rounded w-64">
+                    <button onclick="loadAttendanceList()" class="bg-green-600 text-white px-4 rounded font-bold">Fetch Class</button>
                 </div>
                 <div id="attendance-grid" class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4"></div>
                 <button id="btn-submit-att" onclick="submitAttendance()" class="hidden bg-red-600 text-white px-6 py-2 rounded font-bold">Submit Absentees</button>
@@ -342,23 +293,31 @@
                 <div class="bg-white p-6 rounded shadow mb-4">
                     <h3 class="font-bold mb-4">Update Result (Class-wise)</h3>
                     <div class="flex gap-2 mb-4">
-                         <input type="text" id="res-class" placeholder="Class & Section (e.g. VI-A)" class="border p-2 rounded w-64">
-                         <button onclick="loadGradingList()" class="bg-blue-600 text-white px-4 rounded">Load Class</button>
+                         <input type="text" id="res-class" placeholder="Class (e.g. IX-A)" class="border p-2 rounded w-64">
+                         <button onclick="loadGradingList()" class="bg-blue-600 text-white px-4 rounded font-bold">Load Class</button>
                     </div>
-                    
                     <div id="grading-area" class="mt-4"></div>
+                </div>
+            </div>
+
+            <div id="tab-assignments" class="hidden">
+                <div class="bg-white p-6 rounded shadow max-w-2xl">
+                    <h3 class="font-bold mb-4 text-blue-800">Create New Assignment</h3>
+                    <div class="space-y-4">
+                        <input id="asgn-title" placeholder="Assignment Title" class="w-full border p-2 rounded">
+                        <textarea id="asgn-desc" placeholder="Details/Instructions" class="w-full border p-2 rounded h-24"></textarea>
+                        <input id="asgn-class" placeholder="Target Class (e.g. 11-A)" class="w-full border p-2 rounded">
+                        <button onclick="postAssignment()" class="bg-green-600 text-white px-6 py-2 rounded font-bold w-full md:w-auto">Post Assignment</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="section-gr" class="page-section hidden">
             <div class="flex items-center gap-3 mb-4 border-b border-blue-200 pb-2">
-                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition" title="Go Back">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
+                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
                 <h2 class="text-2xl font-bold text-blue-800">G.R. Incharge Portal</h2>
             </div>
-
             <div class="bg-white p-6 rounded shadow mb-6 no-print">
                 <label class="block font-bold mb-2">Search Student Bio-Data</label>
                 <div class="flex gap-2">
@@ -366,14 +325,14 @@
                     <button onclick="searchGRData()" class="bg-blue-600 text-white px-6 rounded font-bold">Search</button>
                 </div>
             </div>
-
+            
             <div id="gr-result-view" class="hidden">
                 <div class="flex gap-2 mb-4 no-print">
                     <button onclick="printArea('gr-detail-card')" class="bg-gray-800 text-white px-4 py-2 rounded">Print Detail</button>
                     <button onclick="printArea('slc-card')" class="bg-red-800 text-white px-4 py-2 rounded">Print SLC</button>
                     <button onclick="generateCard('gr-student')" class="bg-purple-800 text-white px-4 py-2 rounded">Print ID Card</button>
                 </div>
-
+                
                 <div id="gr-detail-card" class="bg-white p-10 border max-w-3xl mx-auto shadow mb-10">
                     <div class="watermark">STUDENT RECORD</div>
                     <header class="text-center mb-8 border-b-2 border-black pb-4">
@@ -382,11 +341,11 @@
                     </header>
                     <div id="gr-data-content" class="grid grid-cols-2 gap-6 text-sm"></div>
                     <div class="mt-12 flex justify-between">
-                        <div class="text-center"><p>___________________</p><p class="font-bold">G.R Incharge</p></div>
-                        <div class="text-center"><p>___________________</p><p class="font-bold">Senior Principal</p></div>
+                        <div class="text-center"><p>__________</p><p class="font-bold">G.R Incharge</p></div>
+                        <div class="text-center"><p>__________</p><p class="font-bold">Senior Principal</p></div>
                     </div>
                 </div>
-
+                
                 <div id="slc-card" class="bg-white p-10 border max-w-3xl mx-auto shadow hidden">
                     <div class="watermark">LEAVING CERT</div>
                     <header class="text-center mb-8">
@@ -396,13 +355,13 @@
                     <div class="space-y-6 text-lg font-serif leading-relaxed px-8">
                         <p>This is to certify that <span class="font-bold border-b border-black px-2" id="slc-name"></span></p>
                         <p>Son of <span class="font-bold border-b border-black px-2" id="slc-father"></span></p>
-                        <p>G.R No: <span class="font-bold border-b border-black px-2" id="slc-gr"></span> was a bona fide student of this institution.</p>
-                        <p>His date of birth according to our record is <span class="font-bold border-b border-black px-2" id="slc-dob"></span>.</p>
-                        <p>He leaves the school with <span class="font-bold">GOOD</span> moral character.</p>
+                        <p>G.R No: <span class="font-bold border-b border-black px-2" id="slc-gr"></span> was a bona fide student.</p>
+                        <p>Date of birth: <span class="font-bold border-b border-black px-2" id="slc-dob"></span>.</p>
+                        <p>He leaves with <span class="font-bold">GOOD</span> moral character.</p>
                     </div>
                     <div class="mt-20 flex justify-between">
-                        <div class="text-center"><p>___________________</p><p>Clerk</p></div>
-                        <div class="text-center"><p>___________________</p><p>Principal</p></div>
+                        <div class="text-center"><p>__________</p><p>Clerk</p></div>
+                        <div class="text-center"><p>__________</p><p>Principal</p></div>
                     </div>
                 </div>
             </div>
@@ -410,45 +369,84 @@
 
         <div id="section-admin" class="page-section hidden">
             <div class="flex items-center gap-3 mb-4">
-                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition" title="Go Back">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
+                <button onclick="showSection('home')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-full transition"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
                 <h2 class="text-2xl font-bold text-red-800">Admin Panel</h2>
             </div>
 
-            <div class="bg-white p-6 rounded shadow mt-4 border-l-4 border-blue-600">
-                <h3 class="font-bold mb-4 text-lg">Post News / Event / Gallery</h3>
-                <div class="grid grid-cols-1 gap-4 mb-4">
-                    <input id="news-title" type="text" placeholder="Title of News or Event" class="border p-2 rounded w-full">
-                    <textarea id="news-desc" placeholder="Description or Details" class="border p-2 rounded w-full h-20"></textarea>
-                    
-                    <div class="flex gap-4">
-                        <div class="flex-1">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Image/Video Link</label>
-                            <input id="news-img" type="text" placeholder="Paste Image Link (http://...)" class="border p-2 rounded w-full">
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Category</label>
-                            <select id="news-cat" class="border p-2 rounded w-full">
-                                <option>Homepage News</option>
-                                <option>Gallery Image</option>
-                                <option>Event Video</option>
-                            </select>
-                        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded shadow border-l-4 border-red-600">
+                    <h3 class="font-bold mb-2 text-lg">Control Panel</h3>
+                    <p class="text-sm text-gray-500 mb-4">Control teacher access to result editing.</p>
+                    <button id="lockBtn" onclick="toggleLock()" class="px-4 py-2 bg-green-500 text-white rounded w-full font-bold shadow"><i class="ph-bold ph-lock-open"></i> Results Unlocked</button>
+                </div>
+
+                <div class="bg-white p-6 rounded shadow border-l-4 border-blue-600">
+                    <h3 class="font-bold mb-2 text-lg">Class Reports</h3>
+                    <p class="text-sm text-gray-500 mb-4">Generate ranking lists & detailed statistics.</p>
+                    <div class="flex gap-2">
+                        <input id="report-class" placeholder="Class (e.g. 11-A)" class="border p-2 rounded w-full">
+                        <button onclick="generateReport()" class="bg-blue-600 text-white px-4 rounded font-bold shadow">Generate</button>
                     </div>
                 </div>
-                <button onclick="postNews()" class="bg-blue-600 text-white px-4 py-2 rounded font-bold">Post to Website</button>
+                
+                <div class="bg-white p-6 rounded shadow border-l-4 border-purple-600">
+                    <h3 class="font-bold mb-2 text-lg">Gallery Upload</h3>
+                    <div class="border-2 border-dashed border-gray-300 p-8 text-center cursor-pointer hover:bg-gray-50 transition" onclick="document.getElementById('galleryInput').click()">
+                        <i class="ph-bold ph-upload text-4xl text-gray-400 mb-2"></i>
+                        <p class="text-sm text-gray-500">Click to upload Photo/Video directly to Gallery</p>
+                    </div>
+                    <input type="file" id="galleryInput" class="hidden" accept="image/*,video/*" onchange="uploadFile(this, 'gallery')">
+                </div>
+
+                <div class="bg-white p-6 rounded shadow border-l-4 border-green-600">
+                    <h3 class="font-bold mb-2 text-lg">Post News</h3>
+                    <input id="news-title" type="text" placeholder="Title" class="border p-2 rounded w-full mb-2">
+                    <textarea id="news-desc" placeholder="Details" class="border p-2 rounded w-full h-16 mb-2"></textarea>
+                    <select id="news-cat" class="border p-2 rounded w-full mb-2"><option>News</option><option>Event</option></select>
+                    <button onclick="postNews()" class="bg-green-600 text-white px-4 py-2 rounded font-bold w-full">Post News</button>
+                </div>
+                
+                 <div class="bg-white p-6 rounded shadow col-span-1 md:col-span-2">
+                    <h3 class="font-bold mb-4">Add Staff Member</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <input id="adm-id" placeholder="Staff ID" class="border p-2 rounded">
+                        <input id="adm-pass" placeholder="Password" class="border p-2 rounded">
+                        <input id="adm-name" placeholder="Name" class="border p-2 rounded">
+                        <select id="adm-role" class="border p-2 rounded"><option value="Teacher">Teacher</option><option value="GR">GR Incharge</option></select>
+                    </div>
+                    <button onclick="addStaff()" class="bg-gray-800 text-white px-4 py-2 rounded font-bold shadow">Save Staff</button>
+                </div>
             </div>
 
-            <div class="bg-white p-6 rounded shadow mt-4">
-                <h3 class="font-bold mb-4">Add Staff Member</h3>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <input id="adm-id" placeholder="Staff ID" class="border p-2">
-                    <input id="adm-pass" placeholder="Password" class="border p-2">
-                    <input id="adm-name" placeholder="Name" class="border p-2">
-                    <select id="adm-role" class="border p-2"><option value="Teacher">Teacher</option><option value="GR">GR Incharge</option></select>
-                </div>
-                <button onclick="addStaff()" class="bg-green-600 text-white px-4 py-2 rounded">Save Staff</button>
+            <div id="report-container" class="mt-8 hidden bg-white p-8 shadow-xl">
+                 <button onclick="printArea('report-container')" class="bg-gray-800 text-white px-4 py-2 rounded mb-4 float-right no-print">Print Report</button>
+                 <div class="text-center border-b-2 border-black pb-4 mb-4">
+                     <h1 class="text-3xl font-bold">GOVT. COMPREHENSIVE HSS SUKKUR</h1>
+                     <h2 class="text-xl">Academic Performance & Attendance Report</h2>
+                     <p id="rep-class-title" class="font-bold text-lg text-green-800 mt-2"></p>
+                 </div>
+                 
+                 <div class="grid grid-cols-3 gap-4 mb-6 text-center">
+                     <div class="bg-yellow-50 p-4 border border-yellow-200 rounded">
+                         <h4 class="font-bold text-yellow-700 text-xs uppercase tracking-widest">1st Position</h4>
+                         <p id="rep-pos-1" class="font-bold text-xl mt-1">--</p>
+                     </div>
+                      <div class="bg-gray-50 p-4 border border-gray-200 rounded">
+                         <h4 class="font-bold text-gray-700 text-xs uppercase tracking-widest">2nd Position</h4>
+                         <p id="rep-pos-2" class="font-bold text-xl mt-1">--</p>
+                      </div>
+                      <div class="bg-orange-50 p-4 border border-orange-200 rounded">
+                         <h4 class="font-bold text-orange-700 text-xs uppercase tracking-widest">3rd Position</h4>
+                         <p id="rep-pos-3" class="font-bold text-xl mt-1">--</p>
+                      </div>
+                 </div>
+
+                 <table class="w-full border-collapse border text-sm text-center">
+                     <thead class="bg-gray-100 font-bold">
+                         <tr><th class="border p-2">Rank</th><th class="border p-2">Seat No</th><th class="border p-2 text-left">Name</th><th class="border p-2">Total Marks</th><th class="border p-2">%</th><th class="border p-2">Status</th></tr>
+                     </thead>
+                     <tbody id="rep-body"></tbody>
+                 </table>
             </div>
         </div>
 
@@ -456,7 +454,7 @@
 
     <footer class="bg-gray-800 text-white py-6 mt-auto no-print relative z-10">
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-            <div class="text-sm">© 2026 Govt Comprehensive HSS Sukkur. All Rights Reserved.</div>
+            <div class="text-sm">© 2026 Govt Comprehensive HSS Sukkur.</div>
             <div class="flex items-center gap-3 mt-4 md:mt-0">
                 <div class="text-right text-xs">
                     <p class="text-green-400 font-bold uppercase">Developed By</p>
@@ -469,136 +467,99 @@
 
     <div id="idCardModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4 font-id-body overflow-y-auto">
         <div class="bg-slate-100 rounded-lg p-6 max-w-5xl w-full relative">
-            <button onclick="document.getElementById('idCardModal').classList.add('hidden')" class="absolute top-2 right-2 text-red-600 font-bold z-50 hover:bg-red-100 p-2 rounded">✕ Close</button>
-            
+            <button onclick="document.getElementById('idCardModal').classList.add('hidden')" class="absolute top-2 right-2 text-red-600 font-bold z-50 p-2 hover:bg-red-100 rounded">✕ Close</button>
             <div class="text-center no-print mb-4">
                  <h3 class="font-bold text-2xl text-slate-800">Generated ID Card</h3>
-                 <button onclick="printArea('id-card-print-area')" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold mt-2 shadow hover:bg-blue-700 transition">Print Card</button>
+                 <p class="text-xs text-gray-500 mb-2">Click the photo below to upload/update image.</p>
+                 <button onclick="printArea('id-card-print-area')" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-blue-700">Print Both Sides</button>
             </div>
             
-            <div id="id-card-print-area" class="flex flex-col md:flex-row justify-center items-center gap-8">
-                
+            <div id="id-card-print-area" class="flex flex-col md:flex-row justify-center items-center gap-8 flex-wrap">
                 <div class="w-[370px] md:w-[440px]">
                     <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 text-center no-print">Front Side</h3>
-                    <div id="student-card-front" class="relative w-full aspect-[1.7/1] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-row border border-slate-200">
+                    <div class="relative w-full aspect-[1.7/1] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-row border border-slate-200">
                         <div class="relative w-[35%] h-full bg-gradient-to-br from-green-800 via-green-600 to-green-500 flex flex-col items-center pt-4 pb-2">
-                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                            <div class="relative z-10 flex items-center gap-1.5 text-white/90 mb-3">
-                                <i class="ph-fill ph-student text-lg"></i>
-                                <span class="text-[10px] font-bold tracking-[0.15em] uppercase">Identity</span>
+                             <div onclick="document.getElementById('idPhotoInput').click()" class="cursor-pointer relative z-20 w-24 h-24 p-1 bg-white/20 backdrop-blur-sm rounded-full shadow-lg hover:opacity-80 transition group">
+                                <img id="st-photo-display" src="" class="w-full h-full object-cover rounded-full bg-slate-100">
+                                <div class="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 bg-black/40 rounded-full font-bold text-xs">Upload</div>
                             </div>
-                            <div class="relative z-20 w-24 h-24 p-1 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-                                <div class="w-full h-full bg-white rounded-full p-1 overflow-hidden relative">
-                                    <img id="st-photo-display" src="" class="w-full h-full object-cover rounded-full bg-slate-100">
-                                </div>
-                            </div>
-                            <div class="mt-auto text-center px-4 pb-2">
-                                <p class="text-[8px] text-white/80 uppercase tracking-widest font-medium">Valid ID Card</p>
-                            </div>
+                            <input type="file" id="idPhotoInput" class="hidden" accept="image/*" onchange="uploadFile(this, 'id_card')">
+                            <div class="mt-auto text-center px-4 pb-2"><p class="text-[8px] text-white/80 uppercase tracking-widest font-medium">Valid ID Card</p></div>
                         </div>
                         <div class="relative w-[65%] h-full p-4 flex flex-col">
                             <div class="flex items-center gap-2 mb-2">
-                                <div class="w-8 h-8 rounded-lg bg-green-50 text-green-800 flex items-center justify-center border border-green-100 shadow-sm flex-shrink-0">
-                                    <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-6 h-6">
-                                </div>
-                                <div>
-                                    <h1 id="st-school-display" class="text-sm font-extrabold text-slate-800 leading-tight tracking-tight uppercase">Govt. Comprehensive<br>HSS Sukkur</h1>
-                                </div>
+                                <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-8 h-8 rounded bg-green-50">
+                                <h1 class="text-xs font-extrabold text-slate-800 uppercase leading-tight">Govt. Comprehensive<br>HSS Sukkur</h1>
                             </div>
-                            <div class="mt-1 mb-1">
-                                <h2 id="st-name-display" class="text-lg font-bold text-slate-900 leading-tight truncate">Student Name</h2>
-                                <span id="st-class-display" class="inline-block mt-0.5 px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded-md uppercase tracking-wide border border-green-100">
-                                    Class 10-A
-                                </span>
-                            </div>
-                            <div class="mt-auto flex items-end justify-between gap-2">
-                                <div class="bg-slate-50/80 rounded-lg p-2 border border-slate-100 flex-grow min-w-0">
-                                    <div class="mb-1">
-                                        <p class="text-[8px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Father's Name</p>
-                                        <p id="st-father-display" class="text-[10px] font-bold text-slate-700 truncate">Father Name</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-[8px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Year</p>
-                                        <p id="st-year-display" class="text-[10px] font-bold text-slate-700 truncate">2025 - 2026</p>
-                                    </div>
-                                </div>
-                                <div class="flex-shrink-0 w-24 text-center pb-1">
-                                    <div class="h-6 mb-1 flex items-center justify-center font-signature text-xl text-slate-600">
-                                        Principal
-                                    </div>
-                                    <div class="h-px w-full bg-slate-200 mb-0.5"></div>
-                                    <p class="text-[7px] uppercase text-slate-400 font-bold tracking-[0.2em]">Signature</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="w-[350px] md:w-[450px]">
-                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 text-center no-print">Back Side</h3>
-                    <div id="student-card-back" class="relative w-full aspect-[1.7/1] bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col border border-slate-200">
-                        <div class="h-2 w-full bg-gradient-to-r from-green-800 via-green-600 to-green-500"></div>
-                        <div class="p-4 flex-grow flex flex-col">
-                            <div class="grid grid-cols-2 gap-4 mb-3">
-                                <div class="flex gap-2">
-                                    <div class="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-green-600 flex-shrink-0">
-                                        <i class="ph-fill ph-map-pin text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-[8px] uppercase text-slate-400 font-bold tracking-wider">Address</p>
-                                        <p id="st-address-display" class="text-[9px] font-semibold text-slate-700 leading-tight mt-0.5">Board Office Road,<br>Makha Goth, Sukkur</p>
-                                    </div>
-                                </div>
-                                <div class="flex gap-2">
-                                    <div class="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-green-600 flex-shrink-0">
-                                        <i class="ph-fill ph-phone text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-[8px] uppercase text-slate-400 font-bold tracking-wider">Contact</p>
-                                        <p id="st-contact-display" class="text-[9px] font-semibold text-slate-700 leading-tight mt-0.5">SEMIS: 418050146<br>071-5630250</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 rounded-lg p-2 border border-slate-100 mb-2">
-                                <ul class="text-[8px] text-slate-500 space-y-1 list-disc pl-3 leading-tight">
-                                    <li>This card is the property of Govt. Comprehensive HSS Sukkur.</li>
-                                    <li>Cardholder is responsible for the safekeeping of this ID.</li>
-                                    <li>This card must be presented upon request by school authority.</li>
-                                </ul>
-                            </div>
+                            <h2 id="st-name-display" class="text-lg font-bold text-slate-900 leading-tight truncate">Student Name</h2>
+                            <span id="st-class-display" class="inline-block mt-0.5 px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded uppercase">Class</span>
                             <div class="mt-auto flex items-end justify-between">
                                 <div>
-                                    <p class="text-[8px] font-bold text-slate-800 uppercase tracking-wider mb-0.5">If found, return to:</p>
-                                    <p class="text-[8px] text-slate-500">School Administration Office</p>
+                                    <p class="text-[8px] uppercase text-slate-400 font-bold">Father's Name</p>
+                                    <p id="st-father-display" class="text-[10px] font-bold text-slate-700 truncate max-w-[100px]">Father</p>
                                 </div>
                                 <div class="text-right">
-                                     <div id="st-barcode-display" class="font-barcode text-slate-800 opacity-90 leading-none text-3xl">
-                                        *123456*
-                                     </div>
-                                     <p id="st-id-display" class="text-[8px] font-mono text-slate-400 text-center tracking-widest mt-0.5">123456</p>
+                                    <div id="st-barcode-display" class="font-barcode text-3xl leading-none text-slate-800">*123*</div>
+                                    <p id="st-id-display" class="text-[9px] font-mono text-slate-400">123</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="h-1 w-full bg-slate-100"></div>
                     </div>
                 </div>
 
+                <div class="w-[370px] md:w-[440px]">
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 text-center no-print">Back Side</h3>
+                    <div class="relative w-full aspect-[1.7/1] bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200 p-6 flex flex-col justify-between relative">
+                        <div class="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
+                            <img src="https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju" class="w-48 h-48 grayscale">
+                        </div>
+                        
+                        <div class="text-center border-b pb-2">
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Property of</p>
+                            <p class="font-bold text-green-900 text-sm">GOVT. COMPREHENSIVE HIGHER SECONDARY SCHOOL SUKKUR</p>
+                            <p class="text-[10px] text-gray-600">Board Office Road, Makha Goth, Sukkur</p>
+                        </div>
+
+                        <div class="space-y-2 text-[11px] text-gray-700 mt-2 relative z-10">
+                            <p><strong>1.</strong> This card must be worn during school hours.</p>
+                            <p><strong>2.</strong> In case of loss, report immediately to the admin office.</p>
+                            <p><strong>3.</strong> If found, please return to the address above.</p>
+                        </div>
+
+                        <div class="flex justify-between items-end mt-4">
+                            <div class="text-center">
+                                <div class="font-signature text-xl text-blue-900">Sign</div>
+                                <div class="border-t border-gray-400 w-24 mx-auto"></div>
+                                <p class="text-[9px] font-bold uppercase mt-1">Class Teacher</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-signature text-xl text-green-900">Principal</div>
+                                <div class="border-t border-gray-400 w-24 mx-auto"></div>
+                                <p class="text-[9px] font-bold uppercase mt-1">Principal Signature</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-900 text-white text-[8px] text-center py-1 absolute bottom-0 left-0 right-0">
+                            EDUCATION FOR ALL - SUKKUR BOARD
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="loginModal" class="fixed inset-0 modal hidden flex items-center justify-center z-[100] no-print bg-black/50">
+    <div id="loginModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[100] no-print backdrop-blur-sm">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4 relative">
-            <button onclick="document.getElementById('loginModal').classList.add('hidden'); resumeSlideshow();" class="absolute top-4 right-4 text-gray-400">✕</button>
+            <button onclick="document.getElementById('loginModal').classList.add('hidden'); resumeSlideshow();" class="absolute top-4 right-4 text-gray-400 hover:text-red-500">✕</button>
             <h2 class="text-xl font-bold text-center text-green-900 mb-6">Portal Login</h2>
             <div class="flex bg-gray-100 p-1 rounded mb-4">
-                <button onclick="setRole('student')" id="tab-student" class="flex-1 py-1 rounded bg-white shadow text-sm font-bold">Student</button>
-                <button onclick="setRole('staff')" id="tab-staff" class="flex-1 py-1 rounded text-gray-500 text-sm font-bold">Staff</button>
-                <button onclick="setRole('admin')" id="tab-admin" class="flex-1 py-1 rounded text-gray-500 text-sm font-bold">Admin</button>
+                <button onclick="setRole('student')" id="tab-student" class="flex-1 py-1 rounded bg-white shadow text-sm font-bold transition">Student</button>
+                <button onclick="setRole('staff')" id="tab-staff" class="flex-1 py-1 rounded text-gray-500 text-sm font-bold transition">Staff</button>
+                <button onclick="setRole('admin')" id="tab-admin" class="flex-1 py-1 rounded text-gray-500 text-sm font-bold transition">Admin</button>
             </div>
-            <input id="login-user" placeholder="Username / Seat No" class="w-full border p-2 rounded mb-3">
-            <input id="login-pass" type="password" placeholder="Password / GR No" class="w-full border p-2 rounded mb-4">
-            <button onclick="doLogin()" id="btn-do-login" class="w-full bg-green-700 text-white py-2 rounded font-bold">Login</button>
+            <input id="login-user" placeholder="Username / Seat No" class="w-full border p-2 rounded mb-3 focus:outline-none focus:border-green-600">
+            <input id="login-pass" type="password" placeholder="Password / GR No" class="w-full border p-2 rounded mb-4 focus:outline-none focus:border-green-600">
+            <button onclick="doLogin()" id="btn-do-login" class="w-full bg-green-700 text-white py-2 rounded font-bold hover:bg-green-800 transition">Login</button>
             <p id="login-msg" class="text-red-500 text-xs text-center mt-2"></p>
         </div>
     </div>
@@ -607,16 +568,34 @@
         lucide.createIcons();
         
         // ============================================
-        //  API URL
+        // !!! PASTE YOUR WEB APP URL HERE !!!
         // ============================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbyM7Dk3mwU5FsRNLHnnjCXYgaE2mUMagNU_72Das-_W6S47YqmBUyfCbcxi3qveuHz1/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyM7Dk3mwU5FsRNLHnnjCXYgaE2mUMagNU_72Das-_W6S47YqmBUyfCbcxi3qveuHz1/exec"; 
         // ============================================
+        
+        // --- 75 MARKS CONFIGURATION ---
+        const SUBJECT_MAX_MARKS = {
+            "English": 100, "Mathematics": 100, "Physics": 100, "Chemistry": 100,
+            "Biology": 100, "Computer": 100, "G.Science": 100,
+            "Sindhi": 100, "Urdu": 100, "Islamiat": 100, "Social Studies": 100, "Arabic": 100,
+        };
 
         let currentRole = 'student';
         let currentUser = null;
-        let activeStudentData = null; 
+        let activeStudentData = null;
+        let isLocked = false;
+        
+        // Background Slideshow Variables
+        let bgSlides = [
+            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 12000 },
+            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 12000 },
+            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 12000 }
+        ];
+        let bgCurrentIndex = 0;
+        let bgTimer = null;
+        let bgPaused = false;
 
-        // --- CORE NAVIGATION ---
+        // Navigation
         function showSection(id) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.add('hidden'));
             const target = document.getElementById('section-' + id);
@@ -624,10 +603,10 @@
             window.scrollTo(0,0);
         }
 
-        // --- LOGIN SYSTEM ---
+        // --- LOGIN ---
         function openLoginModal() { 
             document.getElementById('loginModal').classList.remove('hidden'); 
-            pauseSlideshow(); // Pause slideshow when modal opens
+            bgPaused = true; 
         }
         
         function setRole(r) {
@@ -636,6 +615,7 @@
                 document.getElementById('tab-'+x).className = (x===r) ? "flex-1 py-1 rounded bg-white shadow text-sm font-bold" : "flex-1 py-1 rounded text-gray-500 text-sm font-bold";
             });
         }
+
         function doLogin() {
             const u = document.getElementById('login-user').value;
             const p = document.getElementById('login-pass').value;
@@ -643,543 +623,389 @@
             const msg = document.getElementById('login-msg');
 
             if(!u || !p) { msg.innerText = "Credentials required"; return; }
-            
-            btn.innerText = "Checking...";
+            btn.innerText = "Verifying...";
             btn.disabled = true;
             
             fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', role: currentRole, username: u, password: p })})
             .then(r => r.json())
             .then(res => {
-                btn.innerText = "Login";
-                btn.disabled = false;
+                btn.innerText = "Login"; btn.disabled = false;
                 if(res.success) {
                     currentUser = res;
                     document.getElementById('loginModal').classList.add('hidden');
-                    resumeSlideshow(); // Resume on success
+                    bgPaused = false; showBgSlide(bgCurrentIndex); // Resume Slideshow
+                    
                     document.getElementById('btn-login').classList.add('hidden');
                     document.getElementById('btn-logout').classList.remove('hidden');
                     
                     if(res.role === 'student') {
                         activeStudentData = res.data; 
                         renderMarksheet(res.data);
+                        showStudentTab('result'); 
                         showSection('student');
+                        loadStudentAssignments(res.data.Class);
                     } else if(res.role === 'teacher') {
                         showSection('teacher');
                     } else if(res.role === 'gr') {
                         showSection('gr');
                     } else if(res.role === 'admin') {
+                        checkLockStatus();
                         showSection('admin');
                     }
-                } else {
-                    msg.innerText = res.message;
-                }
-            })
-            .catch(e => {
-                 btn.innerText = "Login"; btn.disabled = false;
-                 msg.innerText = "Connection Failed. Check URL.";
-            });
+                } else { msg.innerText = res.message; }
+            }).catch(e => { btn.innerText = "Login"; btn.disabled = false; msg.innerText = "Connection Failed"; });
         }
 
-        function logout() {
-            location.reload();
-        }
+        function logout() { location.reload(); }
 
-        // --- STUDENT MARKSHEET ---
-        function renderMarksheet(data) {
-            const meta = document.getElementById('marksheet-meta');
-            meta.innerHTML = `
-                <div><p class="text-gray-500 text-sm">Student Name:</p><p class="font-bold text-lg border-b border-gray-300">${data.Name}</p></div>
-                <div><p class="text-gray-500 text-sm">Father's Name:</p><p class="font-bold text-lg border-b border-gray-300">${data.FatherName}</p></div>
-                <div><p class="text-gray-500 text-sm">Class / Group:</p><p class="font-bold border-b border-gray-300">${data.Class}</p></div>
-                <div><p class="text-gray-500 text-sm">Seat Number:</p><p class="font-bold border-b border-gray-300">${data.SeatNo}</p></div>
-            `;
-            const body = document.getElementById('marksheet-body');
-            body.innerHTML = '';
-            
-            let obtainedTotal = 0;
-            let maxTotal = 0;
-            
-            const ignore = ['Name','FatherName','Class','SeatNo','GRNo','DateofBirth','AdmissionYear','Gender','Total','Result','Percentage','Grade','Position', 'SNo'];
-            
-            Object.keys(data).forEach(k => {
-                if(!ignore.includes(k) && data[k]) {
-                    maxTotal += 100; // Assume 100 Max Marks per subject
-                    body.innerHTML += `
-                        <tr>
-                            <td class="border border-gray-300 p-2 capitalize">${k}</td>
-                            <td class="border border-gray-300 p-2 text-right text-gray-500">100</td>
-                            <td class="border border-gray-300 p-2 text-right font-bold">${data[k]}</td>
-                        </tr>`;
-                    if(!isNaN(data[k])) obtainedTotal += parseInt(data[k]);
-                }
-            });
-            
-            // Auto Update Footer
-            document.getElementById('marksheet-max-total').innerText = maxTotal;
-            document.getElementById('marksheet-total').innerText = obtainedTotal;
-            
-            // Auto Update Result Status
-            let resText = data.Result;
-            if(!resText) {
-                resText = (obtainedTotal >= (maxTotal * 0.33)) ? "PASS" : "FAIL";
+        // --- ADMIN: LOCK / REPORTS / NEWS ---
+        function checkLockStatus() {
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'checkLockStatus' })})
+            .then(r=>r.json()).then(res => { isLocked = res.locked; updateLockUI(); });
+        }
+        function toggleLock() {
+            isLocked = !isLocked;
+            updateLockUI();
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'toggleResultLock', status: isLocked })});
+        }
+        function updateLockUI() {
+            const btn = document.getElementById('lockBtn');
+            if(isLocked) {
+                btn.className = "px-4 py-2 bg-red-600 text-white rounded w-full font-bold shadow";
+                btn.innerHTML = '<i class="ph-bold ph-lock-key"></i> Results LOCKED';
+            } else {
+                btn.className = "px-4 py-2 bg-green-500 text-white rounded w-full font-bold shadow";
+                btn.innerHTML = '<i class="ph-bold ph-lock-open"></i> Results UNLOCKED';
             }
-            const resEl = document.getElementById('rResult');
-            resEl.innerText = resText;
-            resEl.className = resText.toUpperCase().includes('FAIL') ? "text-2xl font-bold text-red-600" : "text-2xl font-bold text-green-600";
         }
 
-        // --- TEACHER: ATTENDANCE ---
-        function showTeacherTab(tab) {
-            document.getElementById('tab-attendance').classList.add('hidden');
-            document.getElementById('tab-result').classList.add('hidden');
-            document.getElementById('tab-'+tab).classList.remove('hidden');
-        }
-
-        function loadAttendanceList() {
-            const cls = document.getElementById('att-class').value;
-            const grid = document.getElementById('attendance-grid');
-            grid.innerHTML = "Fetching...";
+        function generateReport() {
+            const cls = document.getElementById('report-class').value;
+            if(!cls) return alert("Please enter class name");
             
-            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentsByClass', cls: cls })})
-            .then(r => r.json())
-            .then(res => {
-                grid.innerHTML = "";
-                if(res.success && res.data.length > 0) {
-                    res.data.forEach(s => {
-                        grid.innerHTML += `
-                            <label class="bg-white p-2 border rounded flex items-center justify-between cursor-pointer hover:bg-red-50">
-                                <span class="text-sm font-bold">${s.SeatNo} - ${s.Name}</span>
-                                <input type="checkbox" value="${s.SeatNo}" class="att-chk w-5 h-5 accent-red-600">
-                            </label>`;
-                    });
-                    document.getElementById('btn-submit-att').classList.remove('hidden');
-                } else {
-                    grid.innerHTML = "No students found.";
-                }
-            });
-        }
-
-        function submitAttendance() {
-            const cls = document.getElementById('att-class').value;
-            const checks = document.querySelectorAll('.att-chk:checked');
-            const absents = Array.from(checks).map(c => c.value);
+            const btn = document.querySelector('button[onclick="generateReport()"]');
+            btn.innerText = "Processing...";
             
-            fetch(API_URL, { method: 'POST', body: JSON.stringify({ 
-                action: 'markAttendance', 
-                date: new Date().toLocaleDateString(), 
-                class: cls, 
-                absentIds: absents 
-            })})
-            .then(r => r.json())
-            .then(res => alert(res.message));
-        }
-
-        // ============================================
-        //  NEW TEACHER GRADING LOGIC (Subject-Wise)
-        // ============================================
-
-        const SUBJECT_KEYS = [
-          "English", "Mathematics", "Social Studies", "Sindhi", "Islamiat", 
-          "G.Science", "Urdu", "Arabic", "Physics", "Biology", "Chemistry", "Computer"
-        ];
-
-        function loadGradingList() {
-            const cls = document.getElementById('res-class').value;
-            const area = document.getElementById('grading-area');
-            
-            if(!cls) return alert("Please enter a Class name.");
-
-            area.innerHTML = '<div class="p-4 text-center">Fetching student list...</div>';
-            
-            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentsByClass', cls: cls })})
-            .then(r => r.json())
-            .then(res => {
-                if(res.success && res.data.length > 0) {
-                    renderGradingTable(res.data);
-                } else {
-                    area.innerHTML = '<div class="p-4 text-center text-red-500">No students found for this class.</div>';
-                }
-            })
-            .catch(e => {
-                area.innerHTML = '<div class="p-4 text-center text-red-500">Error connecting to database.</div>';
-            });
-        }
-
-        function renderGradingTable(students) {
-            const area = document.getElementById('grading-area');
-            
-            let html = `
-            <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left border-collapse">
-                <thead class="bg-gray-100 text-gray-700 uppercase font-bold text-xs">
-                    <tr>
-                        <th class="p-2 border sticky left-0 bg-gray-100">Seat/Name</th>
-                        ${SUBJECT_KEYS.map(sub => `<th class="p-2 border min-w-[80px]">${sub}</th>`).join('')}
-                        <th class="p-2 border bg-yellow-50">Total</th>
-                        <th class="p-2 border">Result</th>
-                        <th class="p-2 border sticky right-0 bg-gray-100">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y">
-            `;
-
-            students.forEach(s => {
-                const subjectInputs = SUBJECT_KEYS.map(sub => {
-                    const val = s[sub] || ""; 
-                    return `
-                        <td class="p-2 border">
-                            <input type="number" 
-                                   data-seat="${s.SeatNo}" 
-                                   data-subject="${sub}"
-                                   value="${val}" 
-                                   oninput="autoCalculateTotal('${s.SeatNo}')"
-                                   class="w-16 p-1 border rounded text-center subj-input-${s.SeatNo}">
-                        </td>
-                    `;
-                }).join('');
-
-                html += `
-                <tr class="hover:bg-gray-50">
-                    <td class="p-2 border font-bold sticky left-0 bg-white">
-                        <div>${s.SeatNo}</div>
-                        <div class="text-xs font-normal text-gray-500">${s.Name}</div>
-                    </td>
-                    ${subjectInputs}
-                    <td class="p-2 border bg-yellow-50">
-                        <input type="number" id="total-${s.SeatNo}" value="${s.Total || 0}" class="w-16 p-1 font-bold bg-transparent text-center" readonly>
-                    </td>
-                    <td class="p-2 border">
-                        <input type="text" id="result-${s.SeatNo}" value="${s.Result || 'Pass'}" class="w-16 p-1 border rounded text-center">
-                    </td>
-                    <td class="p-2 border sticky right-0 bg-white">
-                        <button onclick="saveStudentResult('${s.SeatNo}')" class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">Save</button>
-                    </td>
-                </tr>
-                `;
-            });
-
-            html += `</tbody></table></div>`;
-            area.innerHTML = html;
-        }
-
-        function autoCalculateTotal(seatNo) {
-            const inputs = document.querySelectorAll(`.subj-input-${seatNo}`);
-            let sum = 0;
-            inputs.forEach(input => {
-                const val = parseFloat(input.value);
-                if(!isNaN(val)) sum += val;
-            });
-            document.getElementById(`total-${seatNo}`).value = sum;
-        }
-
-        function saveStudentResult(seatNo) {
-            const btn = document.querySelector(`button[onclick="saveStudentResult('${seatNo}')"]`);
-            const originalText = btn.innerText;
-            btn.innerText = "...";
-            
-            const inputs = document.querySelectorAll(`.subj-input-${seatNo}`);
-            let marksObj = {};
-            
-            inputs.forEach(input => {
-                const subject = input.getAttribute('data-subject');
-                marksObj[subject] = input.value;
-            });
-
-            const totalVal = document.getElementById(`total-${seatNo}`).value;
-            const resultVal = document.getElementById(`result-${seatNo}`).value;
-
-            fetch(API_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ 
-                    action: 'updateStudentResult', 
-                    seatNo: seatNo, 
-                    marks: marksObj,
-                    result: resultVal
-                })
-            })
-            .then(r => r.json())
-            .then(res => {
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'generateReport', cls: cls })})
+            .then(r=>r.json()).then(res => {
+                btn.innerText = "Generate";
                 if(res.success) {
-                    alert("Saved! New Total: " + totalVal);
-                    btn.innerText = "Saved";
-                } else {
-                    alert(res.message);
-                    btn.innerText = "Retry";
-                }
-                setTimeout(() => btn.innerText = originalText, 2000);
-            })
-            .catch(e => {
-                alert("Connection Failed");
-                btn.innerText = originalText;
-            });
-        }
-
-        // ============================================
-        //  END TEACHER GRADING LOGIC
-        // ============================================
-
-        // --- GR PORTAL ---
-        function searchGRData() {
-            const q = document.getElementById('gr-search').value;
-            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentFullDetail', query: q })})
-            .then(r => r.json())
-            .then(res => {
-                if(res.success) {
-                    activeStudentData = res.data;
-                    document.getElementById('gr-result-view').classList.remove('hidden');
+                    document.getElementById('report-container').classList.remove('hidden');
+                    document.getElementById('rep-class-title').innerText = "Class: " + cls;
                     
-                    const d = res.data;
-                    document.getElementById('gr-data-content').innerHTML = `
-                        <p><b>GR No:</b> ${d.GRNo}</p> <p><b>Date of Birth:</b> ${d.DateofBirth || 'N/A'}</p>
-                        <p><b>Name:</b> ${d.Name}</p> <p><b>Year of Adm:</b> ${d.AdmissionYear || 'N/A'}</p>
-                        <p><b>Father:</b> ${d.FatherName}</p> <p><b>Class:</b> ${d.Class}</p>
-                        <p><b>Gender:</b> ${d.Gender || 'N/A'}</p> <p><b>Seat No:</b> ${d.SeatNo}</p>
-                    `;
+                    // Display Toppers
+                    if(res.toppers[0]) document.getElementById('rep-pos-1').innerText = `${res.toppers[0].Name} (${res.toppers[0].Total})`;
+                    if(res.toppers[1]) document.getElementById('rep-pos-2').innerText = `${res.toppers[1].Name} (${res.toppers[1].Total})`;
+                    if(res.toppers[2]) document.getElementById('rep-pos-3').innerText = `${res.toppers[2].Name} (${res.toppers[2].Total})`;
+                    
+                    // Fill Table
+                    const tbody = document.getElementById('rep-body');
+                    tbody.innerHTML = res.students.map(s => `
+                        <tr class="hover:bg-gray-50 border-b">
+                            <td class="p-2 font-bold">${s.Rank}</td>
+                            <td class="p-2">${s.SeatNo}</td>
+                            <td class="p-2 text-left">${s.Name}</td>
+                            <td class="p-2">${s.Total}</td>
+                            <td class="p-2 font-bold ${parseFloat(s.Percentage) < 33 ? 'text-red-600' : 'text-green-600'}">${s.Percentage}%</td>
+                            <td class="p-2">${s.Result || '-'}</td>
+                        </tr>
+                    `).join('');
+                } else { alert(res.message); }
+            });
+        }
 
-                    document.getElementById('slc-name').innerText = d.Name;
-                    document.getElementById('slc-father').innerText = d.FatherName;
-                    document.getElementById('slc-gr').innerText = d.GRNo;
-                    document.getElementById('slc-dob').innerText = d.DateofBirth || "__________";
-                    document.getElementById('slc-card').classList.remove('hidden'); 
+        // --- FILE UPLOAD (Gallery & ID Card) ---
+        function uploadFile(input, context) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Show immediate preview for ID Card
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result.split(',')[1];
+                if(context === 'id_card') document.getElementById('st-photo-display').src = e.target.result;
+
+                const idKey = (currentRole === 'student') ? activeStudentData.SeatNo : ((currentUser) ? currentUser.id : null);
+                if(!idKey && context === 'id_card') return alert("Error: User ID not found.");
+
+                alert("Uploading... Please wait.");
+                
+                fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'uploadPhoto',
+                        fileData: base64,
+                        fileName: file.name,
+                        mimeType: file.type,
+                        context: context,
+                        idKey: idKey
+                    })
+                })
+                .then(r=>r.json()).then(res => {
+                    if(res.success) alert("Upload Successful!");
+                    else alert("Upload Failed: " + res.message);
+                });
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // --- ASSIGNMENTS ---
+        function loadStudentAssignments(cls) {
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getAssignments', cls: cls })})
+            .then(r=>r.json()).then(res => {
+                const list = document.getElementById('student-assignment-list');
+                if(res.success && res.data.length > 0) {
+                      list.innerHTML = res.data.map(a => `
+                        <div class="bg-gray-50 p-4 rounded border-l-4 border-blue-500 shadow-sm">
+                            <div class="flex justify-between">
+                                <h4 class="font-bold text-lg">${a.title}</h4>
+                                <span class="text-xs text-gray-500">${new Date(a.date).toLocaleDateString()}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-bold">By: ${a.teacher}</p>
+                            <p class="text-gray-700 whitespace-pre-wrap">${a.desc}</p>
+                        </div>
+                      `).join('');
                 } else {
-                    alert("Not Found");
+                    list.innerHTML = '<p class="text-gray-500">No assignments posted for this class yet.</p>';
                 }
             });
         }
-        
-        // --- ADMIN: POST NEWS ---
-        function postNews() {
-            const t = document.getElementById('news-title').value;
-            const d = document.getElementById('news-desc').value;
-            const c = document.getElementById('news-cat').value;
-            const i = document.getElementById('news-img').value || "https://via.placeholder.com/150";
 
-            if(!t) return alert("Title required");
+        function postAssignment() {
+            const title = document.getElementById('asgn-title').value;
+            const desc = document.getElementById('asgn-desc').value;
+            const cls = document.getElementById('asgn-class').value;
+            
+            if(!title || !cls) return alert("Title and Class are required.");
 
-            const btn = document.querySelector('button[onclick="postNews()"]');
-            const originalText = btn.innerText;
+            const btn = document.querySelector('button[onclick="postAssignment()"]');
             btn.innerText = "Posting...";
             btn.disabled = true;
 
             fetch(API_URL, {
                 method: 'POST',
                 body: JSON.stringify({
-                    action: 'postNews',
-                    title: t,
-                    description: d,
-                    category: c,
-                    image: i
+                    action: 'postAssignment',
+                    title: title, desc: desc, cls: cls, teacher: currentUser.name
                 })
-            })
-            .then(r => r.json())
-            .then(res => {
+            }).then(r=>r.json()).then(res=>{
                 alert(res.message);
-                btn.innerText = originalText;
-                btn.disabled = false;
-                if(res.success) {
-                    // clear inputs
-                    document.getElementById('news-title').value = "";
-                    document.getElementById('news-desc').value = "";
-                    document.getElementById('news-img').value = "";
-                }
-            })
-            .catch(e => {
-                alert("Error posting news");
-                btn.innerText = originalText;
-                btn.disabled = false;
+                btn.innerText = "Post Assignment"; btn.disabled = false;
+                document.getElementById('asgn-title').value = "";
+                document.getElementById('asgn-desc').value = "";
             });
         }
 
-        // --- UPDATED PRINTING LOGIC ---
-        function printArea(elementId) {
-            // 1. Remove 'print-now' from any previously selected element
-            document.querySelectorAll('.print-now').forEach(e => e.classList.remove('print-now'));
-            
-            // 2. Add 'print-now' to the specific element we want to print
-            const target = document.getElementById(elementId);
-            if(target) {
-                target.classList.add('print-now');
-                window.print();
-                
-                // 3. Cleanup: Remove the class after printing (optional but good for state)
-                setTimeout(() => {
-                    target.classList.remove('print-now');
-                }, 1000);
-            } else {
-                alert("Error: Content to print not found.");
-            }
-        }
-
-        // --- ID CARD GENERATOR ---
+        // --- ID CARD GENERATION ---
         function generateCard(type) {
-            let name, sub, father, year, idLabel, idVal, imgSrc;
-            const schoolName = "Govt. Comprehensive HSS";
-            
-            // Default Values
-            year = "2025 - 2026";
-            
-            if(type === 'student' || type === 'gr-student') {
-                if(!activeStudentData) return alert("No Student Selected or Logged In");
-                name = activeStudentData.Name;
-                father = activeStudentData.FatherName;
-                sub = `Class ${activeStudentData.Class}`;
-                idVal = activeStudentData.GRNo;
-                imgSrc = "https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju"; 
-            } else if (type === 'staff') {
-                if(!currentUser) return alert("Not Logged In");
-                name = currentUser.name;
-                father = "Teaching Staff"; 
-                sub = currentUser.designation || "Teacher";
-                idVal = currentUser.id;
-                imgSrc = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
-            }
+            let data = (type === 'student' || type === 'gr-student') ? activeStudentData : currentUser;
+            if(!data) return alert("No data available");
+
+            const name = data.Name || data.name;
+            const father = data.FatherName || "Teaching Staff";
+            const sub = data.Class || data.designation;
+            const idVal = data.SeatNo || data.GRNo || data.id;
+            const barcode = "*" + idVal + "*";
+            const photo = data.PhotoURL || (type==='staff' ? "https://cdn-icons-png.flaticon.com/512/3135/3135768.png" : "https://lh3.googleusercontent.com/d/1jnNNiAc2-DZUtVkABXetBkMGqB0olPju");
 
             document.getElementById('st-name-display').innerText = name;
             document.getElementById('st-father-display').innerText = father;
             document.getElementById('st-class-display').innerText = sub;
-            document.getElementById('st-year-display').innerText = year;
-            
             document.getElementById('st-id-display').innerText = idVal;
-            document.getElementById('st-barcode-display').innerText = "*" + idVal + "*";
-            document.getElementById('st-photo-display').src = imgSrc;
-            
+            document.getElementById('st-barcode-display').innerText = barcode;
+            document.getElementById('st-photo-display').src = photo;
+
             document.getElementById('idCardModal').classList.remove('hidden');
         }
 
+        // --- UTILS (Printing, Tabs, Init) ---
+        function printArea(id) {
+            document.querySelectorAll('.print-now').forEach(e => e.classList.remove('print-now'));
+            const target = document.getElementById(id);
+            if(target) {
+                target.classList.add('print-now');
+                window.print();
+                setTimeout(() => target.classList.remove('print-now'), 1000);
+            } else { alert("Error: Element not found"); }
+        }
+
+        function showStudentTab(tab) {
+             document.getElementById('st-tab-result').classList.add('hidden');
+             document.getElementById('st-tab-assignments').classList.add('hidden');
+             document.getElementById('st-tab-'+tab).classList.remove('hidden');
+        }
+
+        function showTeacherTab(t) {
+            ['attendance','result','assignments'].forEach(x => document.getElementById('tab-'+x).classList.add('hidden'));
+            document.getElementById('tab-'+t).classList.remove('hidden');
+        }
+
+        function postNews() {
+            const t = document.getElementById('news-title').value;
+            const d = document.getElementById('news-desc').value;
+            const c = document.getElementById('news-cat').value;
+            const i = document.getElementById('news-img').value || "";
+            if(!t) return alert("Title required");
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'postNews', title: t, description: d, category: c, image: i })})
+            .then(r=>r.json()).then(res=>alert(res.message));
+        }
+
         function addStaff() {
-            const data = {
-                action: 'adminUpdateStaff',
-                mode: 'add',
-                id: document.getElementById('adm-id').value,
-                password: document.getElementById('adm-pass').value,
-                name: document.getElementById('adm-name').value,
-                role: document.getElementById('adm-role').value
-            };
-            fetch(API_URL, {method:'POST', body:JSON.stringify(data)})
-            .then(r=>r.json()).then(res => alert(res.message));
+            const data = { action: 'adminUpdateStaff', id: document.getElementById('adm-id').value, password: document.getElementById('adm-pass').value, name: document.getElementById('adm-name').value, role: document.getElementById('adm-role').value };
+            fetch(API_URL, {method:'POST', body:JSON.stringify(data)}).then(r=>r.json()).then(res => alert(res.message));
         }
 
-        // ============================================
-        //  BACKGROUND SLIDESHOW LOGIC
-        // ============================================
-        const FALLBACK_SLIDES = [
-            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 12000 },
-            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 18000 },
-            { image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", duration: 15000 }
-        ];
-
-        let bgSlides = [];
-        let bgCurrentIndex = 0;
-        let bgTimer = null;
-        let bgPaused = false;
-
-        function loadSlides() {
-            bgSlides = FALLBACK_SLIDES;
-            initSlideshow();
-        }
-
-        function initSlideshow() {
-            const container = document.getElementById("bg-slideshow");
-            container.innerHTML = "";
-
-            bgSlides.forEach(slide => {
-                const div = document.createElement("div");
-                div.className = "bg-slide";
-                div.style.backgroundImage = `url('${slide.image}')`;
-                div.dataset.duration = slide.duration || 12000;
-                container.appendChild(div);
+        // --- TEACHER: ATTENDANCE & GRADING ---
+        function loadAttendanceList() {
+            const cls = document.getElementById('att-class').value;
+            const grid = document.getElementById('attendance-grid');
+            grid.innerHTML = "Fetching...";
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentsByClass', cls: cls })})
+            .then(r => r.json()).then(res => {
+                grid.innerHTML = "";
+                if(res.success && res.data.length > 0) {
+                    res.data.forEach(s => {
+                        grid.innerHTML += `<label class="bg-white p-2 border rounded flex items-center justify-between cursor-pointer hover:bg-red-50"><span class="text-sm font-bold">${s.SeatNo} - ${s.Name}</span><input type="checkbox" value="${s.SeatNo}" class="att-chk w-5 h-5 accent-red-600"></label>`;
+                    });
+                    document.getElementById('btn-submit-att').classList.remove('hidden');
+                } else { grid.innerHTML = "No students found."; }
             });
-
-            container.style.display = "block";
-            document.getElementById("bg-overlay").style.display = "block";
-            showBgSlide(0);
+        }
+        function submitAttendance() {
+            const cls = document.getElementById('att-class').value;
+            const absents = Array.from(document.querySelectorAll('.att-chk:checked')).map(c => c.value);
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'markAttendance', date: new Date().toLocaleDateString(), class: cls, absentIds: absents })})
+            .then(r => r.json()).then(res => alert(res.message));
+        }
+        
+        // --- SMART GRADING LIST (UPDATED) ---
+        function loadGradingList() {
+            const cls = document.getElementById('res-class').value;
+            const area = document.getElementById('grading-area');
+            area.innerHTML = 'Fetching...';
+            
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentsByClass', cls: cls })})
+            .then(r=>r.json()).then(res => {
+                if(res.success && res.data.length > 0) {
+                    // Use dynamic subjects from backend
+                    const SUBJECTS = res.activeSubjects || ["English", "Urdu"]; 
+                    
+                    let html = `<div class="overflow-x-auto"><table class="min-w-full text-sm text-left border-collapse"><thead class="bg-gray-100"><tr><th class="p-2 border sticky left-0 bg-gray-100">Name</th>${SUBJECTS.map(s=>`<th class="p-2 border">${s}</th>`).join('')}<th class="p-2 border">Total</th><th class="p-2 border sticky right-0">Act</th></tr></thead><tbody>`;
+                    
+                    res.data.forEach(s => {
+                        html += `<tr><td class="p-2 border sticky left-0 bg-white font-bold">${s.SeatNo}<br><span class="font-normal text-xs">${s.Name}</span></td>`;
+                        SUBJECTS.forEach(sub => { 
+                            html += `<td class="p-2 border"><input type="number" data-seat="${s.SeatNo}" data-subject="${sub}" value="${s[sub]||''}" class="w-12 p-1 border rounded subj-input-${s.SeatNo}"></td>`; 
+                        });
+                        html += `<td class="p-2 border font-bold">${s.Total||0}</td><td class="p-2 border sticky right-0 bg-white"><button onclick="saveStudentResult('${s.SeatNo}')" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Save</button></td></tr>`;
+                    });
+                    html += '</tbody></table></div>';
+                    area.innerHTML = html;
+                } else area.innerHTML = "No students found";
+            });
         }
 
+        function saveStudentResult(seat) {
+            const inputs = document.querySelectorAll(`.subj-input-${seat}`);
+            let marks = {};
+            inputs.forEach(i => marks[i.getAttribute('data-subject')] = i.value);
+            fetch(API_URL, { method:'POST', body:JSON.stringify({action:'updateStudentResult', seatNo:seat, marks:marks})})
+            .then(r=>r.json()).then(res=>alert(res.message));
+        }
+
+        // --- GR SEARCH ---
+        function searchGRData() {
+            const q = document.getElementById('gr-search').value;
+            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentFullDetail', query: q })})
+            .then(r => r.json()).then(res => {
+                if(res.success) {
+                    activeStudentData = res.data;
+                    document.getElementById('gr-result-view').classList.remove('hidden');
+                    const d = res.data;
+                    document.getElementById('gr-data-content').innerHTML = `<p><b>GR No:</b> ${d.GRNo}</p><p><b>Name:</b> ${d.Name}</p><p><b>Father:</b> ${d.FatherName}</p><p><b>Class:</b> ${d.Class}</p>`;
+                    document.getElementById('slc-name').innerText = d.Name;
+                    document.getElementById('slc-father').innerText = d.FatherName;
+                    document.getElementById('slc-gr').innerText = d.GRNo;
+                    document.getElementById('slc-dob').innerText = d.DateofBirth || "__________";
+                    document.getElementById('slc-card').classList.remove('hidden'); 
+                } else alert("Not Found");
+            });
+        }
+
+        // --- SMART MARKSHEET RENDER (UPDATED) ---
+        function renderMarksheet(data) {
+             const meta = document.getElementById('marksheet-meta');
+             meta.innerHTML = `<div><p class="text-gray-500 text-sm">Name:</p><p class="font-bold text-lg border-b">${data.Name}</p></div><div><p class="text-gray-500 text-sm">Father:</p><p class="font-bold text-lg border-b">${data.FatherName}</p></div><div><p class="text-gray-500 text-sm">Class:</p><p class="font-bold border-b">${data.Class}</p></div><div><p class="text-gray-500 text-sm">Seat:</p><p class="font-bold border-b">${data.SeatNo}</p></div>`;
+             
+             let total = 0; let maxTotal = 0;
+             
+             // Use subjects sent from backend if available, or fallback
+             const subjectsToShow = data.activeSubjects || Object.keys(SUBJECT_MAX_MARKS);
+             
+             document.getElementById('marksheet-body').innerHTML = subjectsToShow.map(k => {
+                 // Check if data exists for this subject (and is not null/empty string)
+                 if(data[k] !== undefined && data[k] !== "") {
+                     const obtained = parseFloat(data[k]);
+                     const max = SUBJECT_MAX_MARKS[k] || 100; 
+                     total += obtained; 
+                     maxTotal += max;
+                     return `<tr><td class="border p-2">${k}</td><td class="border p-2 text-right">${max}</td><td class="border p-2 text-right font-bold">${obtained}</td></tr>`;
+                 } 
+                 return '';
+             }).join('');
+             
+             document.getElementById('marksheet-max-total').innerText = maxTotal;
+             document.getElementById('marksheet-total').innerText = total;
+             document.getElementById('rResult').innerText = data.Result || "Pending";
+        }
+
+        // --- INIT ---
+        window.onload = function() {
+            // Init Slideshow
+            const container = document.getElementById("bg-slideshow");
+            if(container) {
+                container.style.display = "block";
+                document.getElementById("bg-overlay").style.display = "block";
+                bgSlides.forEach(s => {
+                    const div = document.createElement("div");
+                    div.className = "bg-slide";
+                    div.style.backgroundImage = `url('${s.image}')`;
+                    container.appendChild(div);
+                });
+                showBgSlide(0);
+            }
+            
+            // Header Slider
+            let slideIndex = 0;
+            const slides = document.querySelectorAll('.slide');
+            if(slides.length) setInterval(() => {
+                slides.forEach(s => s.classList.remove('active'));
+                slideIndex = (slideIndex + 1) % slides.length;
+                slides[slideIndex].classList.add('active');
+            }, 4000);
+            
+            // Init Charts
+            const ctx1 = document.getElementById('studentChart');
+            if(ctx1) new Chart(ctx1, { type: 'doughnut', data: { datasets: [{ data: [85, 15], backgroundColor: ['#166534', '#e5e7eb'] }] }, options: { cutout: '75%', plugins: { legend: { display: false } } } });
+            const ctx2 = document.getElementById('teacherChart');
+            if(ctx2) new Chart(ctx2, { type: 'doughnut', data: { datasets: [{ data: [96, 4], backgroundColor: ['#1e40af', '#e5e7eb'] }] }, options: { cutout: '75%', plugins: { legend: { display: false } } } });
+        };
+        
         function showBgSlide(index) {
             if (bgPaused) return;
-
             const slideEls = document.querySelectorAll(".bg-slide");
-            slideEls.forEach(s => {
-                s.classList.remove("active", "zoom");
-                s.style.animationDuration = "";
-            });
-
+            slideEls.forEach(s => { s.classList.remove("active", "zoom"); s.style.animationDuration = ""; });
             const active = slideEls[index];
             if(active) {
-                const duration = active.dataset.duration;
                 active.classList.add("active", "zoom");
-                active.style.animationDuration = duration + "ms";
-
+                active.style.animationDuration = "12000ms";
                 clearTimeout(bgTimer);
                 bgTimer = setTimeout(() => {
                     bgCurrentIndex = (index + 1) % slideEls.length;
                     showBgSlide(bgCurrentIndex);
-                }, duration);
+                }, 12000);
             }
         }
-
-        function pauseSlideshow() { bgPaused = true; }
-        
-        function resumeSlideshow() { 
-            bgPaused = false; 
-            showBgSlide(bgCurrentIndex);
-        }
-
-        // --- INITIALIZATION ---
-        window.onload = function() {
-            // 1. Initialize Background Slideshow
-            loadSlides();
-
-            // 2. Initialize School Header Slider
-            let slideIndex = 0;
-            const slides = document.querySelectorAll('.slide');
-            if(slides.length > 0) {
-                setInterval(() => {
-                    slides.forEach(s => s.classList.remove('active'));
-                    slideIndex = (slideIndex + 1) % slides.length;
-                    slides[slideIndex].classList.add('active');
-                }, 4000);
-            }
-
-            // 3. Charts Config - Compact
-            const chartConfig = (id, data, color) => {
-                const ctx = document.getElementById(id);
-                if(ctx) {
-                    new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Present', 'Absent'],
-                            datasets: [{
-                                data: data,
-                                backgroundColor: [color, '#e5e7eb'],
-                                borderWidth: 0,
-                                hoverOffset: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            cutout: '75%'
-                        }
-                    });
-                }
-            };
-
-            chartConfig('studentChart', [85, 15], '#166534'); // School Green
-            chartConfig('teacherChart', [96, 4], '#1e40af'); // Blue
-
-            // 4. Load Dashboard Data
-            fetch(`${API_URL}?action=getDashboardStats`)
-            .then(r=>r.json())
-            .then(res=>{
-                if(res.success && document.getElementById('notice-board')) {
-                    document.getElementById('notice-board').innerHTML = res.data.notifications.map(n=>`<div class="border-b py-1 mb-1">➢ ${n}</div>`).join('');
-                }
-            })
-            .catch(e => console.log("Init Error: " + e));
-        };
     </script>
 </body>
 </html>
-
