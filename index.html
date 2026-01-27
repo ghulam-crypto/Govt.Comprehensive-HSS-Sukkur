@@ -53,17 +53,30 @@
         }
 
         /* PRINTING RULES (Crucial for Reports/ID Cards) */
-        @media print {
-            body * { visibility: visible; }
-            #bg-slideshow, #bg-overlay, header, footer, .no-print, .page-section { display: none !important; }
-            
-            /* Only show elements with 'print-now' class */
-            .print-now, .print-now * { visibility: visible; }
-            .print-now { 
-                position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; z-index: 9999;
-            }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
+@media print {
+    /* 1. Hide everything by default using visibility, not display */
+    body * { visibility: hidden; }
+    
+    /* 2. Remove .page-section from this list so the parent container stays in the layout */
+    #bg-slideshow, #bg-overlay, header, footer, .no-print { display: none !important; }
+    
+    /* 3. Make the specific printable area visible */
+    .print-now, .print-now * { visibility: visible; }
+    
+    /* 4. Position it at the top left to remove whitespace from hidden parents */
+    .print-now { 
+        position: absolute; 
+        left: 0 0; 
+        top: 0 0; 
+        width: 100%; 
+        margin: 0 0 0 0; 
+        padding: 0; 
+        background: white; 
+        z-index: 9999;
+    }
+    
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -174,12 +187,10 @@
                 <h2 class="text-2xl font-bold text-green-800">School Gallery</h2>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <img src="https://lh3.googleusercontent.com/d/1CNhh5MMo1Ks07LEUQvddU5kasZGYjYif" class="slide active w-full h-full object-cover">
-                <img src="https://lh3.googleusercontent.com/d/15wbNoMTWczFgAP9j5BobBryp6l9supvX" class="slide w-full h-full object-cover">
-                <img src="https://lh3.googleusercontent.com/d/1diwpdDpgkiJQ7YZzDlk9WXUv2GOP0f84" class="slide w-full h-full object-cover">
-                <img src="https://lh3.googleusercontent.com/d/1pzGInepUMFbZ3ePsGp0SkLQy0hPi2OAV" class="slide w-full h-full object-cover">
-                <img src="https://lh3.googleusercontent.com/d/19G2MWRjeVaRoszZwAWh_YvQjkOLAAHCw" class="slide w-full h-full object-cover">
-                <img src="https://lh3.googleusercontent.com/d/1hNQcgS7Jee97zWe9sLoPD-XO9jaFhNYN" class="slide w-full h-full object-cover">
+                <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
+                <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
+                <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=1000" class="rounded shadow hover:scale-105 transition object-cover h-40 w-full">
             </div>
         </div>
 
@@ -1011,5 +1022,3 @@
     </script>
 </body>
 </html>
-
-
