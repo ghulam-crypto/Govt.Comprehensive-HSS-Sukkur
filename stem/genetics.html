@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Genetics Lab</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f8ff; color: #333; text-align: center; padding: 20px; }
+        .container { display: flex; justify-content: center; gap: 50px; margin-top: 30px; align-items: flex-start; }
+        
+        .controls { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 250px; text-align: left; }
+        select { width: 100%; padding: 8px; margin-bottom: 15px; font-size: 16px; }
+        
+        .grid-area { position: relative; }
+        
+        .punnett { 
+            display: grid; grid-template-columns: 100px 100px; grid-template-rows: 100px 100px; 
+            gap: 5px; background: #333; padding: 5px; border-radius: 10px;
+        }
+        .cell { 
+            background: white; display: flex; align-items: center; justify-content: center; 
+            font-size: 30px; font-weight: bold; flex-direction: column;
+        }
+        .cell span { font-size: 12px; font-weight: normal; color: #666; margin-top: 5px; }
+
+        .headers-top { display: grid; grid-template-columns: 100px 100px; gap: 5px; margin-bottom: 5px; margin-left: 35px; }
+        .headers-side { position: absolute; left: -30px; top: 35px; display: grid; grid-template-rows: 100px 100px; gap: 5px; }
+        .header { font-weight: bold; font-size: 24px; text-align: center; }
+
+        .phenotype { color: white; padding: 5px 10px; border-radius: 4px; font-size: 10px; margin-top: 5px; }
+        .dom { background: #3498db; } /* Dominant Color */
+        .rec { background: #e74c3c; } /* Recessive Color */
+    </style>
+</head>
+<body>
+
+    <h1>🧬 Punnett Square Calculator</h1>
+    <p>Predict offspring traits based on parent genes.</p>
+
+    <div class="container">
+        <div class="controls">
+            <h3>Parent 1 (Top)</h3>
+            <select id="p1" onchange="calc()">
+                <option value="BB">Homozygous Dominant (BB)</option>
+                <option value="Bb" selected>Heterozygous (Bb)</option>
+                <option value="bb">Homozygous Recessive (bb)</option>
+            </select>
+
+            <h3>Parent 2 (Side)</h3>
+            <select id="p2" onchange="calc()">
+                <option value="BB">Homozygous Dominant (BB)</option>
+                <option value="Bb" selected>Heterozygous (Bb)</option>
+                <option value="bb">Homozygous Recessive (bb)</option>
+            </select>
+
+            <hr>
+            <h4>Statistics:</h4>
+            <p>Dominant (Blue): <b id="statDom">0%</b></p>
+            <p>Recessive (Red): <b id="statRec">0%</b></p>
+        </div>
+
+        <div class="grid-area">
+            <div class="headers-top">
+                <div class="header" id="h1">B</div>
+                <div class="header" id="h2">b</div>
+            </div>
+            <div class="headers-side">
+                <div class="header" id="v1" style="line-height: 100px;">B</div>
+                <div class="header" id="v2" style="line-height: 100px;">b</div>
+            </div>
+            
+            <div class="punnett">
+                <div class="cell" id="c1"></div>
+                <div class="cell" id="c2"></div>
+                <div class="cell" id="c3"></div>
+                <div class="cell" id="c4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calc() {
+            const p1 = document.getElementById('p1').value; // e.g. "Bb"
+            const p2 = document.getElementById('p2').value;
+
+            const gene1 = p1.split(''); // ['B', 'b']
+            const gene2 = p2.split('');
+
+            // Set Headers
+            document.getElementById('h1').innerText = gene1[0];
+            document.getElementById('h2').innerText = gene1[1];
+            document.getElementById('v1').innerText = gene2[0];
+            document.getElementById('v2').innerText = gene2[1];
+
+            // Fill Cells
+            const offspring = [];
+            offspring.push(combine(gene2[0], gene1[0])); // Row 1 Col 1
+            offspring.push(combine(gene2[0], gene1[1])); // Row 1 Col 2
+            offspring.push(combine(gene2[1], gene1[0])); // Row 2 Col 1
+            offspring.push(combine(gene2[1], gene1[1])); // Row 2 Col 2
+
+            // Display Results
+            let domCount = 0;
+            
+            for(let i=0; i<4; i++) {
+                let geno = offspring[i];
+                let isDom = geno.includes('B');
+                if(isDom) domCount++;
+                
+                let label = isDom ? "Dominant" : "Recessive";
+                let colorClass = isDom ? "dom" : "rec";
+                
+                document.getElementById('c'+(i+1)).innerHTML = 
+                    `${geno}<span class="phenotype ${colorClass}">${label}</span>`;
+            }
+
+            // Stats
+            let pctDom = (domCount / 4) * 100;
+            document.getElementById('statDom').innerText = pctDom + "%";
+            document.getElementById('statRec').innerText = (100 - pctDom) + "%";
+        }
+
+        function combine(a, b) {
+            // Standard convention: Capital first (Bb not bB)
+            if(b === b.toUpperCase() && a === a.toLowerCase()) return b + a;
+            return a + b;
+        }
+
+        calc();
+    </script>
+</body>
+</html>

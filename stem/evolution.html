@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Evolution Lab</title>
+    <style>
+        body { margin: 0; font-family: sans-serif; overflow: hidden; }
+        #controls {
+            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white;
+            padding: 15px; border-radius: 8px; width: 250px;
+        }
+        button { width: 100%; padding: 10px; background: #e74c3c; color: white; border: none; margin-top: 10px; cursor: pointer; }
+        select { width: 100%; padding: 5px; }
+        .stat { display: flex; justify-content: space-between; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="controls">
+        <h3>🧬 Evolution Lab</h3>
+        
+        <label>ENVIRONMENT</label>
+        <select id="env" onchange="changeEnv()">
+            <option value="snow">Snow (White Background)</option>
+            <option value="dirt">Dirt (Brown Background)</option>
+        </select>
+
+        <p>Predators catch bunnies that <b>don't match</b> the background.</p>
+        
+        <button onclick="addPredator()">🐺 Add Predator (Eat)</button>
+        <button onclick="reproduce()" style="background:#2ecc71">❤️ Reproduce (Next Gen)</button>
+
+        <hr>
+        <div class="stat"><span>⚪ White Fur:</span> <b id="cntW">0</b></div>
+        <div class="stat"><span>🟤 Brown Fur:</span> <b id="cntB">0</b></div>
+        <div class="stat"><span>Total:</span> <b id="cntT">0</b></div>
+    </div>
+
+    <canvas id="simCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let bunnies = [];
+        let background = "snow"; // or "dirt"
+        
+        // Resize
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Bunny {
+            constructor(furColor) {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.fur = furColor; // "white" or "brown"
+                this.r = 10;
+                this.vx = Math.random() - 0.5;
+                this.vy = Math.random() - 0.5;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x<0||this.x>canvas.width) this.vx*=-1;
+                if(this.y<0||this.y>canvas.height) this.vy*=-1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+                ctx.fillStyle = this.fur === "white" ? "#fff" : "#8B4513";
+                ctx.strokeStyle = "#000"; ctx.lineWidth=1;
+                ctx.fill(); ctx.stroke();
+                
+                // Ears
+                ctx.beginPath(); ctx.ellipse(this.x-5, this.y-10, 3, 8, -0.2, 0, Math.PI*2);
+                ctx.fillStyle = this.fur === "white" ? "#fff" : "#8B4513"; ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(this.x+5, this.y-10, 3, 8, 0.2, 0, Math.PI*2);
+                ctx.fill(); ctx.stroke();
+            }
+        }
+
+        function init() {
+            // Start with 10 of each
+            for(let i=0; i<10; i++) bunnies.push(new Bunny("white"));
+            for(let i=0; i<10; i++) bunnies.push(new Bunny("brown"));
+        }
+
+        function changeEnv() {
+            background = document.getElementById('env').value;
+        }
+
+        function addPredator() {
+            // Wolves eat the ones that are VISIBLE (Contrast)
+            // If BG is Snow, Wolves eat Brown.
+            // If BG is Dirt, Wolves eat White.
+            
+            let targetColor = background === "snow" ? "brown" : "white";
+            
+            // Remove 50% of the visible bunnies
+            for(let i = bunnies.length - 1; i >= 0; i--) {
+                if(bunnies[i].fur === targetColor) {
+                    if(Math.random() < 0.5) bunnies.splice(i, 1);
+                }
+            }
+        }
+
+        function reproduce() {
+            // Every bunny has 1 baby of same color
+            let newBunnies = [];
+            bunnies.forEach(b => {
+                // Slight mutation chance? No, let's keep simple mendelian
+                newBunnies.push(new Bunny(b.fur));
+            });
+            bunnies = bunnies.concat(newBunnies);
+            
+            // Cap population to prevent crash
+            if(bunnies.length > 300) bunnies.length = 300;
+        }
+
+        function animate() {
+            // Draw BG
+            ctx.fillStyle = background === "snow" ? "#ddeeff" : "#5d4037";
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+
+            let w=0, b=0;
+            bunnies.forEach(bun => {
+                bun.update();
+                bun.draw();
+                if(bun.fur === "white") w++; else b++;
+            });
+
+            document.getElementById('cntW').innerText = w;
+            document.getElementById('cntB').innerText = b;
+            document.getElementById('cntT').innerText = bunnies.length;
+
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+</html>

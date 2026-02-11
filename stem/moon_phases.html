@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Moon Phases</title>
+    <style>
+        body { margin: 0; background: #000; color: white; font-family: sans-serif; display: flex; height: 100vh; }
+        
+        .panel { flex: 1; border: 1px solid #333; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        h2 { position: absolute; top: 10px; margin: 0; color: #aaa; font-size: 16px; }
+        
+        /* Orbit View Elements */
+        #orbit-system { width: 300px; height: 300px; border: 1px dashed #555; border-radius: 50%; position: relative; }
+        #sun-light { position: absolute; right: -100px; top: 0; bottom: 0; width: 50px; background: linear-gradient(90deg, transparent, rgba(255,255,0,0.2)); pointer-events: none; }
+        
+        #earth { 
+            width: 50px; height: 50px; background: royalblue; border-radius: 50%; 
+            position: absolute; top: 125px; left: 125px; 
+            box-shadow: inset -10px 0 20px rgba(0,0,0,0.8); /* Shadow on side away from sun */
+        }
+        
+        #moon-orbit-path {
+            width: 200px; height: 200px; border: 1px solid #444; border-radius: 50%;
+            position: absolute; top: 50px; left: 50px;
+        }
+        
+        #moon-obj {
+            width: 20px; height: 20px; background: #888; border-radius: 50%;
+            position: absolute; top: 0; left: 90px; /* Start at top */
+            /* We will use JS to rotate the shadow on the moon */
+        }
+
+        /* Earth View Elements */
+        #earth-view-canvas { width: 200px; height: 200px; background: #000; border-radius: 50%; }
+
+        #controls { position: absolute; bottom: 20px; width: 100%; text-align: center; }
+        input[type=range] { width: 300px; }
+    </style>
+</head>
+<body>
+
+    <div class="panel" style="border-right: 1px solid #555;">
+        <h2>TOP-DOWN VIEW (Orbit)</h2>
+        <div style="position: absolute; right: 10px; top: 50%; color: yellow; font-size: 12px;">SUNLIGHT &rarr;</div>
+        
+        <div id="orbit-system">
+            <div id="earth"></div>
+            <div id="moon-orbit-path">
+                <div id="moon-obj"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>EARTH VIEW (What we see)</h2>
+        <canvas id="earth-view-canvas" width="200" height="200"></canvas>
+        <h1 id="phase-name" style="margin-top: 20px;">New Moon</h1>
+    </div>
+
+    <div id="controls">
+        <input type="range" id="slider" min="0" max="360" value="0" oninput="update()">
+        <p>Drag slider to orbit the moon</p>
+    </div>
+
+    <script>
+        const slider = document.getElementById('slider');
+        const moonObj = document.getElementById('moon-obj');
+        const canvas = document.getElementById('earth-view-canvas');
+        const ctx = canvas.getContext('2d');
+        const label = document.getElementById('phase-name');
+
+        function update() {
+            let angle = parseInt(slider.value);
+            
+            // 1. Move Moon in Orbit (CSS Rotation)
+            // Orbit center is 100,100. Radius 100.
+            let rad = (angle - 90) * (Math.PI / 180); // -90 to start at top (New Moon position relative to sun on right?)
+            // Actually, if Sun is on RIGHT:
+            // Angle 0 (Right) = New Moon (Between Earth and Sun)
+            // Angle 180 (Left) = Full Moon (Earth between Moon and Sun)
+            
+            // Let's adjust math to match visual standard
+            // Let's say 0 is Right (Sun side).
+            let cx = 100; let cy = 100; let r = 100;
+            let mx = cx + r * Math.cos(angle * Math.PI / 180);
+            let my = cy + r * Math.sin(angle * Math.PI / 180);
+            
+            moonObj.style.left = (mx - 10) + "px"; // -10 for half width
+            moonObj.style.top = (my - 10) + "px";
+            
+            // 2. Draw Moon Phase (Canvas)
+            drawPhase(angle);
+        }
+
+        function drawPhase(angle) {
+            // Angle 0 = New Moon (All Dark)
+            // Angle 180 = Full Moon (All Light)
+            ctx.clearRect(0,0,200,200);
+            
+            // Draw Dark Background Circle
+            ctx.beginPath();
+            ctx.arc(100, 100, 90, 0, Math.PI*2);
+            ctx.fillStyle = "#222"; // Shadow part
+            ctx.fill();
+
+            // Lighting Logic
+            // We use overlapping ellipses to simulate shadow curve
+            
+            let phase = angle % 360;
+            let phaseName = "";
+            
+            // Naming
+            if(phase < 20 || phase > 340) phaseName = "New Moon";
+            else if(phase < 80) phaseName = "Waxing Crescent";
+            else if(phase < 100) phaseName = "First Quarter";
+            else if(phase < 170) phaseName = "Waxing Gibbous";
+            else if(phase < 190) phaseName = "Full Moon";
+            else if(phase < 260) phaseName = "Waning Gibbous";
+            else if(phase < 280) phaseName = "Last Quarter";
+            else phaseName = "Waning Crescent";
+            
+            label.innerText = phaseName;
+
+            // Drawing the lit part
+            // This is complex 3D projection math simplified:
+            // We draw a white circle, then overlay a black oval (or vice versa)
+            
+            ctx.fillStyle = "#fff";
+            
+            if (phase <= 180) {
+                // Waxing (Growing) - Sun is on Right side of orbit relative to Earth view?
+                // Actually, simplified:
+                // 0 -> Dark. 180 -> Full.
+                
+                // Draw Full White Circle
+                ctx.beginPath(); ctx.arc(100,100,90,0,Math.PI*2); ctx.fill();
+                
+                // Draw Shadow (Black)
+                ctx.fillStyle = "#222";
+                ctx.beginPath();
+                ctx.arc(100,100,90,-Math.PI/2,Math.PI/2, true); // Left half always dark in transition? No.
+                
+                // Use built-in blend modes for masking
+                // Let's use simple width scaling of an ellipse
+                // Scale goes from 1 (Full Shadow) to -1 (Full Light)
+                
+                let width = Math.cos(phase * Math.PI / 180) * 90;
+                
+                // Reset canvas
+                ctx.clearRect(0,0,200,200);
+                
+                // Base: 
+                // If 0-180 (Waxing): Right side is lit first? 
+                // Let's stick to standard view: New Moon (Invisible) -> Full
+                
+                // Correct simplified logic:
+                // Draw a White Circle
+                ctx.beginPath(); ctx.arc(100,100,90,0,Math.PI*2); ctx.fillStyle = (phase > 90 && phase < 270) ? "#fff" : "#222"; ctx.fill();
+                
+                // Draw a half circle on the right/left
+                ctx.beginPath(); ctx.arc(100,100,90,-Math.PI/2,Math.PI/2, (phase > 180)); 
+                ctx.fillStyle = (phase > 180) ? "#222" : "#fff"; 
+                ctx.fill();
+                
+                // Draw Ellipse in center to create crescent/gibbous shape
+                ctx.beginPath();
+                let w = 90 * Math.cos(phase * Math.PI / 180);
+                ctx.ellipse(100, 100, Math.abs(w), 90, 0, 0, Math.PI*2);
+                ctx.fillStyle = (phase < 90 || phase > 270) ? "#222" : "#fff";
+                ctx.fill();
+            } else {
+                // Same logic handles 180-360 via the cosine/sine checks above
+                // Just re-run the drawing block above, it handles 0-360
+                 // Draw base circle color
+                let isBackLit = (phase > 90 && phase < 270);
+                ctx.beginPath(); ctx.arc(100,100,90,0,Math.PI*2); 
+                ctx.fillStyle = isBackLit ? "#fff" : "#222"; 
+                ctx.fill();
+
+                // Draw Half Circle
+                let isLeftLit = (phase > 180);
+                ctx.beginPath(); 
+                ctx.arc(100,100,90,-Math.PI/2,Math.PI/2, !isLeftLit); 
+                ctx.fillStyle = isLeftLit ? "#fff" : "#222";
+                ctx.fill();
+
+                // Draw Ellipse
+                let w = 90 * Math.cos(phase * Math.PI / 180);
+                ctx.beginPath();
+                ctx.ellipse(100, 100, Math.abs(w), 90, 0, 0, Math.PI*2);
+                // If we are mostly dark (New Moon side), ellipse is white (crescent hole).
+                // If we are mostly lit (Full Moon side), ellipse is dark.
+                let isEllipseLit = (phase > 90 && phase < 270); 
+                ctx.fillStyle = isEllipseLit ? "#222" : "#fff";
+                ctx.fill();
+            }
+        }
+
+        update();
+    </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Chemistry Lab</title>
+    <style>
+        body { background: #eee; font-family: sans-serif; text-align: center; padding: 20px; }
+        .game-area { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        
+        .equation { font-size: 40px; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        input { width: 60px; font-size: 30px; text-align: center; border: 2px solid #333; border-radius: 5px; }
+        
+        .visuals { display: flex; justify-content: space-around; margin-top: 30px; border-top: 2px solid #ddd; padding-top: 20px; }
+        .molecule-box { width: 30%; }
+        
+        /* Atom styles */
+        .atom-h { display: inline-block; width: 20px; height: 20px; background: #fff; border: 2px solid #ccc; border-radius: 50%; }
+        .atom-o { display: inline-block; width: 30px; height: 30px; background: #ff4757; border-radius: 50%; }
+        
+        button { font-size: 20px; padding: 10px 30px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        #msg { font-size: 20px; font-weight: bold; margin-top: 15px; height: 30px; }
+    </style>
+</head>
+<body>
+
+    <h1>⚖️ Balancing Equations</h1>
+    <p>Adjust the coefficients to satisfy the Law of Conservation of Mass.</p>
+
+    <div class="game-area">
+        <div class="equation">
+            <input type="number" id="c1" value="1" min="1" onchange="update()"> 
+            <span>H₂</span>
+            <span>+</span>
+            <input type="number" id="c2" value="1" min="1" onchange="update()"> 
+            <span>O₂</span>
+            <span>&rarr;</span>
+            <input type="number" id="c3" value="1" min="1" onchange="update()"> 
+            <span>H₂O</span>
+        </div>
+
+        <div id="msg"></div>
+
+        <div class="visuals">
+            <div class="molecule-box">
+                <h3>Reactants (Left)</h3>
+                <div id="vis-left"></div>
+                <p>Hydrogen: <b id="h-left">2</b> | Oxygen: <b id="o-left">2</b></p>
+            </div>
+            <div class="molecule-box">
+                <h3>Products (Right)</h3>
+                <div id="vis-right"></div>
+                <p>Hydrogen: <b id="h-right">2</b> | Oxygen: <b id="o-right">1</b></p>
+            </div>
+        </div>
+
+        <button onclick="check()">Check Balance</button>
+    </div>
+
+    <script>
+        function update() {
+            let v1 = parseInt(document.getElementById('c1').value) || 1;
+            let v2 = parseInt(document.getElementById('c2').value) || 1;
+            let v3 = parseInt(document.getElementById('c3').value) || 1;
+
+            // Update Counts
+            let hL = v1 * 2;
+            let oL = v2 * 2;
+            let hR = v3 * 2;
+            let oR = v3 * 1;
+
+            document.getElementById('h-left').innerText = hL;
+            document.getElementById('o-left').innerText = oL;
+            document.getElementById('h-right').innerText = hR;
+            document.getElementById('o-right').innerText = oR;
+
+            document.getElementById('msg').innerText = ""; // Clear win message
+
+            // Draw Visuals
+            drawMolecules('vis-left', v1, 'H2');
+            drawMolecules('vis-left', v2, 'O2', true); // Append
+            drawMolecules('vis-right', v3, 'H2O');
+        }
+
+        function drawMolecules(divId, count, type, append=false) {
+            const container = document.getElementById(divId);
+            if(!append) container.innerHTML = "";
+            
+            for(let i=0; i<count; i++) {
+                let d = document.createElement('div');
+                d.style.margin = "5px";
+                d.style.display = "inline-block";
+                d.style.border = "1px solid #ddd";
+                d.style.padding = "5px";
+                d.style.borderRadius = "5px";
+
+                if(type === 'H2') {
+                    d.innerHTML = '<span class="atom-h"></span><span class="atom-h"></span>';
+                } else if(type === 'O2') {
+                    d.innerHTML = '<span class="atom-o"></span><span class="atom-o"></span>';
+                } else if(type === 'H2O') {
+                    d.innerHTML = '<span class="atom-h"></span><span class="atom-o"></span><span class="atom-h"></span>';
+                }
+                container.appendChild(d);
+            }
+        }
+
+        function check() {
+            let hL = parseInt(document.getElementById('h-left').innerText);
+            let oL = parseInt(document.getElementById('o-left').innerText);
+            let hR = parseInt(document.getElementById('h-right').innerText);
+            let oR = parseInt(document.getElementById('o-right').innerText);
+
+            const msg = document.getElementById('msg');
+            if(hL === hR && oL === oR) {
+                msg.innerText = "✅ BALANCED! Good Job!";
+                msg.style.color = "green";
+            } else {
+                msg.innerText = "❌ Not Balanced. Look at the atom counts.";
+                msg.style.color = "red";
+            }
+        }
+
+        update();
+    </script>
+</body>
+</html>

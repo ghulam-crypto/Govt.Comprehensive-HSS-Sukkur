@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM pH Lab</title>
+    <style>
+        body { font-family: monospace; background: #222; color: white; text-align: center; }
+        .beaker {
+            width: 300px; height: 400px; border: 5px solid white; border-top: none; 
+            margin: 20px auto; position: relative; overflow: hidden; background: #0f0;
+            transition: background 0.5s;
+        }
+        .ion { position: absolute; font-weight: bold; font-size: 14px; transition: top 0.5s, left 0.5s; }
+        .h-ion { color: #ff0000; }  /* H+ is Red */
+        .oh-ion { color: #0000ff; } /* OH- is Blue */
+
+        .controls { background: #333; padding: 20px; width: 400px; margin: auto; border-radius: 10px; }
+        input[type=range] { width: 100%; }
+        .big-text { font-size: 30px; margin: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>🧪 pH Scale Simulator</h1>
+    
+    <div class="beaker" id="liquid">
+        </div>
+
+    <div class="controls">
+        <label>pH Level</label>
+        <div class="big-text" id="phVal">7.0</div>
+        <div id="typeVal">NEUTRAL</div>
+        <input type="range" id="phSlider" min="0" max="14" step="1" value="7">
+        <p>🔴 H+ (Acid) | 🔵 OH- (Base)</p>
+    </div>
+
+    <script>
+        const slider = document.getElementById('phSlider');
+        const liquid = document.getElementById('liquid');
+        
+        function update() {
+            let ph = parseInt(slider.value);
+            document.getElementById('phVal').innerText = ph.toFixed(1);
+            
+            // 1. Color Logic (Universal Indicator)
+            let color = "";
+            let label = "";
+            if(ph < 3) { color = "#ff0000"; label="STRONG ACID"; } // Red
+            else if(ph < 6) { color = "#ffa500"; label="WEAK ACID"; } // Orange
+            else if(ph == 7) { color = "#00ff00"; label="NEUTRAL (Water)"; } // Green
+            else if(ph < 11) { color = "#0000ff"; label="WEAK BASE"; } // Blue
+            else { color = "#800080"; label="STRONG BASE"; } // Purple
+            
+            liquid.style.background = color;
+            document.getElementById('typeVal').innerText = label;
+
+            // 2. Ion Particle Logic
+            // Low pH = High H+, Low OH-
+            // High pH = Low H+, High OH-
+            // Let's create 20 particles total
+            liquid.innerHTML = ""; // Clear
+            
+            let hCount = 0; 
+            let ohCount = 0;
+            
+            if(ph == 7) { hCount=10; ohCount=10; }
+            else if(ph < 7) { hCount = 15 + (7-ph); ohCount = 20 - hCount; }
+            else { ohCount = 15 + (ph-7); hCount = 20 - ohCount; }
+            
+            // Spawn H+
+            for(let i=0; i<Math.min(20, hCount); i++) spawnIon("H+", "h-ion");
+            // Spawn OH-
+            for(let i=0; i<Math.min(20, ohCount); i++) spawnIon("OH-", "oh-ion");
+        }
+
+        function spawnIon(text, cssClass) {
+            let div = document.createElement("div");
+            div.className = "ion " + cssClass;
+            div.innerText = text;
+            div.style.top = Math.random() * 380 + "px";
+            div.style.left = Math.random() * 280 + "px";
+            liquid.appendChild(div);
+        }
+
+        slider.addEventListener('input', update);
+        update();
+    </script>
+</body>
+</html>

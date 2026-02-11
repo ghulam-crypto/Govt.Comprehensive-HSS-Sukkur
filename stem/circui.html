@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Circuit Lab</title>
+    <style>
+        body { background: #222; color: white; font-family: sans-serif; text-align: center; }
+        .container { display: flex; justify-content: center; gap: 50px; margin-top: 50px; }
+        .circuit-box { border: 2px solid #555; padding: 20px; border-radius: 10px; width: 300px; position: relative; }
+        .wire { background: #f1c40f; position: absolute; }
+        
+        /* Bulb Style */
+        .bulb {
+            width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff;
+            position: absolute; display: flex; justify-content: center; align-items: center;
+            font-size: 12px; font-weight: bold; color: black; transition: 0.3s;
+        }
+        
+        /* Battery */
+        .battery {
+            width: 60px; height: 30px; border: 3px solid #ccc; position: absolute; top: 250px; left: 120px;
+            background: linear-gradient(90deg, #444 50%, #eee 50%);
+        }
+        .battery::after { content: "+  -"; color: white; position: absolute; top: -20px; width: 100%; text-align: center; }
+
+        .control-panel { margin-top: 30px; padding: 20px; background: #333; display: inline-block; border-radius: 10px; }
+        input[type=range] { width: 200px; }
+    </style>
+</head>
+<body>
+
+    <h1>⚡ Circuit Lab</h1>
+    <p>Compare Series vs. Parallel Circuits</p>
+
+    <div class="container">
+        <div class="circuit-box" style="height: 300px;">
+            <h3>SERIES</h3>
+            <div class="wire" style="width: 260px; height: 4px; top: 50px; left: 20px;"></div>
+            <div class="wire" style="width: 260px; height: 4px; bottom: 50px; left: 20px;"></div>
+            <div class="wire" style="width: 4px; height: 200px; top: 50px; left: 20px;"></div>
+            <div class="wire" style="width: 4px; height: 200px; top: 50px; right: 20px;"></div>
+            
+            <div id="s-bulb1" class="bulb" style="top: 30px; left: 80px;">B1</div>
+            <div id="s-bulb2" class="bulb" style="top: 30px; left: 180px;">B2</div>
+            
+            <div class="battery"></div>
+        </div>
+
+        <div class="circuit-box" style="height: 300px;">
+            <h3>PARALLEL</h3>
+            <div class="wire" style="width: 260px; height: 4px; top: 50px; left: 20px;"></div>
+            <div class="wire" style="width: 260px; height: 4px; top: 150px; left: 20px;"></div>
+            <div class="wire" style="width: 260px; height: 4px; bottom: 50px; left: 20px;"></div>
+            <div class="wire" style="width: 4px; height: 200px; top: 50px; left: 20px;"></div>
+            <div class="wire" style="width: 4px; height: 200px; top: 50px; right: 20px;"></div>
+
+            <div id="p-bulb1" class="bulb" style="top: 30px; left: 130px;">B1</div>
+            <div id="p-bulb2" class="bulb" style="top: 130px; left: 130px;">B2</div>
+
+            <div class="battery"></div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <label>Voltage (V): <span id="voltVal">9</span>V</label><br>
+        <input type="range" id="voltage" min="0" max="24" value="9">
+        <p style="font-size: 14px; color: #aaa;">
+            <b>Observation:</b> Parallel bulbs are brighter because they each get full voltage.<br>
+            Series bulbs dim because they split the voltage.
+        </p>
+    </div>
+
+    <script>
+        const slider = document.getElementById('voltage');
+        
+        function update() {
+            let v = parseInt(slider.value);
+            document.getElementById('voltVal').innerText = v;
+
+            // Physics Logic
+            // Brightness = Power ~ Voltage^2
+            
+            // SERIES: Voltage splits (V/2 per bulb)
+            let vSeries = v / 2;
+            let brightSeries = Math.min(255, (vSeries / 12) * 255); 
+            let colorS = `rgb(255, 255, ${255 - brightSeries})`;
+            let shadowS = `0 0 ${brightSeries/5}px yellow`;
+            
+            document.getElementById('s-bulb1').style.background = `rgb(255, 255, ${255-brightSeries})`;
+            document.getElementById('s-bulb1').style.boxShadow = shadowS;
+            document.getElementById('s-bulb2').style.background = `rgb(255, 255, ${255-brightSeries})`;
+            document.getElementById('s-bulb2').style.boxShadow = shadowS;
+
+            // PARALLEL: Full Voltage (V per bulb)
+            let vParallel = v;
+            let brightParallel = Math.min(255, (vParallel / 12) * 255);
+            let colorP = `rgb(255, 255, ${255 - brightParallel})`;
+            let shadowP = `0 0 ${brightParallel/3}px yellow`;
+
+            document.getElementById('p-bulb1').style.background = `rgb(255, 255, ${255-brightParallel})`;
+            document.getElementById('p-bulb1').style.boxShadow = shadowP;
+            document.getElementById('p-bulb2').style.background = `rgb(255, 255, ${255-brightParallel})`;
+            document.getElementById('p-bulb2').style.boxShadow = shadowP;
+        }
+
+        slider.addEventListener('input', update);
+        update();
+    </script>
+</body>
+</html>

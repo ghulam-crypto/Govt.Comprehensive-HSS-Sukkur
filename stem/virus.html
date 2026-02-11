@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Biology: Virus Lab</title>
+    <style>
+        body { margin: 0; background-color: #1e1e1e; color: white; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 300px; background: #252526; padding: 20px; border-right: 1px solid #333; display: flex; flex-direction: column; gap: 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); z-index: 10; }
+        
+        h2 { color: #ff5555; margin-top: 0; margin-bottom: 5px; }
+        p { color: #aaa; font-size: 0.9em; margin-top: 0; }
+
+        /* Stats Box */
+        .stat-box { background: #333; padding: 15px; border-radius: 8px; border: 1px solid #444; }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
+        .dot { height: 12px; width: 12px; display: inline-block; border-radius: 50%; margin-right: 8px; }
+        
+        .blue { background: #3498db; color: #3498db; }   /* Healthy */
+        .red { background: #ff4757; color: #ff4757; }     /* Infected */
+        .green { background: #2ecc71; color: #2ecc71; }   /* Recovered */
+
+        /* Controls */
+        label { display: block; font-size: 12px; color: #ccc; margin-bottom: 5px; margin-top: 10px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; margin-top: 5px; }
+        
+        .btn-restart { background: #3498db; color: white; }
+        .btn-restart:hover { background: #2980b9; }
+
+        .btn-toggle { background: #444; color: white; border: 1px solid #555; }
+        .btn-toggle.active { background: #e67e22; border-color: #d35400; }
+
+        #simCanvas { flex-grow: 1; display: block; cursor: crosshair; }
+        
+        /* Graph Overlay (Simple Bar) */
+        #graph-container { height: 10px; background: #333; display: flex; margin-top: 10px; border-radius: 5px; overflow: hidden; }
+        #bar-s { background: #3498db; width: 99%; height: 100%; transition: width 0.2s; }
+        #bar-i { background: #ff4757; width: 1%; height: 100%; transition: width 0.2s; }
+        #bar-r { background: #2ecc71; width: 0%; height: 100%; transition: width 0.2s; }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <h2>🦠 Virus Lab</h2>
+            <p>Epidemiology Simulator</p>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-row" style="color:#3498db"><span class="dot blue"></span> Healthy: <span id="valS">0</span></div>
+            <div class="stat-row" style="color:#ff4757"><span class="dot red"></span> Infected: <span id="valI">0</span></div>
+            <div class="stat-row" style="color:#2ecc71"><span class="dot green"></span> Recovered: <span id="valR">0</span></div>
+            
+            <div id="graph-container">
+                <div id="bar-s"></div><div id="bar-i"></div><div id="bar-r"></div>
+            </div>
+        </div>
+
+        <div>
+            <label>TRANSMISSION RATE (Contagiousness)</label>
+            <input type="range" id="transRate" min="5" max="100" value="60">
+            
+            <label>RECOVERY TIME</label>
+            <input type="range" id="recTime" min="100" max="1000" value="400">
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #444; width: 100%;">
+
+        <div>
+            <label>INTERVENTIONS</label>
+            <button id="btn-lockdown" class="btn-toggle" onclick="toggleLockdown()">🚧 QUARANTINE (Lockdown)</button>
+            <button id="btn-mask" class="btn-toggle" onclick="toggleMasks()">😷 WEAR MASKS</button>
+            <button class="btn-restart" onclick="restart()">🔄 RESTART OUTBREAK</button>
+        </div>
+    </div>
+
+    <canvas id="simCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Simulation Constants
+        const POPULATION = 250;
+        const SPEED = 2;
+        const BALL_SIZE = 4;
+        
+        // State
+        let people = [];
+        let lockdown = false;
+        let masks = false;
+        let animationId;
+
+        function resize() {
+            canvas.width = canvas.parentElement.offsetWidth - 300; // Sidebar width
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Person {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * SPEED;
+                this.vy = (Math.random() - 0.5) * SPEED;
+                this.status = 'S'; // S, I, R
+                this.timer = 0;
+            }
+
+            update() {
+                // Movement
+                let moveSpeed = lockdown ? 0.1 : 1.0; // Slow down if lockdown
+                
+                this.x += this.vx * moveSpeed;
+                this.y += this.vy * moveSpeed;
+
+                // Bounce off walls
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+                // Recovery Logic
+                if (this.status === 'I') {
+                    this.timer++;
+                    let recoveryTime = parseInt(document.getElementById('recTime').value);
+                    if (this.timer > recoveryTime) {
+                        this.status = 'R';
+                    }
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, BALL_SIZE, 0, Math.PI * 2);
+                
+                if (this.status === 'S') ctx.fillStyle = '#3498db';
+                else if (this.status === 'I') ctx.fillStyle = '#ff4757';
+                else ctx.fillStyle = '#2ecc71'; // R
+                
+                ctx.fill();
+            }
+        }
+
+        function checkCollisions() {
+            // Simple grid-free collision (O(N^2) but fine for 250 particles)
+            for (let i = 0; i < people.length; i++) {
+                for (let j = i + 1; j < people.length; j++) {
+                    let p1 = people[i];
+                    let p2 = people[j];
+                    
+                    let dx = p1.x - p2.x;
+                    let dy = p1.y - p2.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+
+                    if (dist < BALL_SIZE * 2) {
+                        // Collision!
+                        attemptInfection(p1, p2);
+                    }
+                }
+            }
+        }
+
+        function attemptInfection(p1, p2) {
+            // Only spreads if one is I and other is S
+            let infected = null;
+            let healthy = null;
+
+            if (p1.status === 'I' && p2.status === 'S') { infected = p1; healthy = p2; }
+            else if (p2.status === 'I' && p1.status === 'S') { infected = p2; healthy = p1; }
+
+            if (infected && healthy) {
+                // Get slider value (0-100)
+                let transmissionChance = parseInt(document.getElementById('transRate').value);
+                
+                // Masks reduce chance by 70%
+                if (masks) transmissionChance = transmissionChance * 0.3;
+
+                if (Math.random() * 100 < transmissionChance) {
+                    healthy.status = 'I';
+                }
+            }
+        }
+
+        function restart() {
+            people = [];
+            // Reset Buttons
+            lockdown = false; document.getElementById('btn-lockdown').className = "btn-toggle";
+            masks = false; document.getElementById('btn-mask').className = "btn-toggle";
+            
+            for(let i=0; i<POPULATION; i++) {
+                people.push(new Person());
+            }
+            // Patient Zero
+            people[0].status = 'I';
+        }
+
+        function toggleLockdown() {
+            lockdown = !lockdown;
+            let btn = document.getElementById('btn-lockdown');
+            btn.className = lockdown ? "btn-toggle active" : "btn-toggle";
+            btn.innerText = lockdown ? "🚧 LIFT LOCKDOWN" : "🚧 QUARANTINE (Lockdown)";
+        }
+
+        function toggleMasks() {
+            masks = !masks;
+            let btn = document.getElementById('btn-mask');
+            btn.className = masks ? "btn-toggle active" : "btn-toggle";
+            btn.innerText = masks ? "😷 REMOVE MASKS" : "😷 WEAR MASKS";
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let s = 0, i = 0, r = 0;
+
+            people.forEach(p => {
+                p.update();
+                p.draw();
+                if(p.status === 'S') s++;
+                else if(p.status === 'I') i++;
+                else r++;
+            });
+
+            checkCollisions();
+
+            // Update UI
+            document.getElementById('valS').innerText = s;
+            document.getElementById('valI').innerText = i;
+            document.getElementById('valR').innerText = r;
+
+            // Update Graph Widths
+            let total = people.length;
+            document.getElementById('bar-s').style.width = (s/total)*100 + "%";
+            document.getElementById('bar-i').style.width = (i/total)*100 + "%";
+            document.getElementById('bar-r').style.width = (r/total)*100 + "%";
+
+            requestAnimationFrame(animate);
+        }
+
+        // Init
+        restart();
+        animate();
+
+    </script>
+</body>
+</html>

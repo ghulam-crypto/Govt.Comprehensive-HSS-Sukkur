@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Gravity Lab</title>
+    <style>
+        body { margin: 0; background-color: #000; overflow: hidden; color: white; font-family: sans-serif; }
+        #instructions {
+            position: absolute; top: 20px; left: 20px; pointer-events: none;
+            background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;
+        }
+        h1 { margin: 0; font-size: 20px; color: #ffd700; }
+        .key { color: #00ff00; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="instructions">
+        
+
+[Image of solar system diagram]
+
+        <h1>🪐 Gravity Sandbox</h1>
+        <p>1. Click anywhere to spawn a <b>Planet</b>.</p>
+        <p>2. Drag mouse to give it <b>Velocity</b> (sling it!).</p>
+        <p>3. The yellow star is the <b>Sun</b>.</p>
+        <p>Stats: <span id="count">0</span> Planets</p>
+    </div>
+
+    <canvas id="spaceCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Physics Constants
+        const G = 0.5; // Gravitational Constant (Tweaked for screen visuals)
+        const SUN_MASS = 1000;
+        
+        let planets = [];
+        let sun = { x: window.innerWidth/2, y: window.innerHeight/2, r: 30, m: SUN_MASS };
+        
+        // Mouse State for "Slingshot" creation
+        let isDragging = false;
+        let dragStart = {x:0, y:0};
+        let dragCurrent = {x:0, y:0};
+
+        class Planet {
+            constructor(x, y, vx, vy) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.m = 10 + Math.random() * 20; // Random mass
+                this.r = this.m / 3; // Size based on mass
+                this.color = `hsl(${Math.random()*360}, 70%, 60%)`;
+                this.path = [];
+            }
+
+            update() {
+                // Calculate Force from Sun
+                let dx = sun.x - this.x;
+                let dy = sun.y - this.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                
+                // Crash into sun
+                if(dist < sun.r + this.r) {
+                    return false; // Dead
+                }
+
+                // F = G * (m1*m2) / r^2
+                let force = (G * sun.m * this.m) / (dist * dist);
+                
+                // Force Components
+                let fx = force * (dx / dist);
+                let fy = force * (dy / dist);
+
+                // Acceleration (a = F/m)
+                let ax = fx / this.m;
+                let ay = fy / this.m;
+
+                // Update Velocity & Position
+                this.vx += ax;
+                this.vy += ay;
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Trail
+                if(Math.random() > 0.5) this.path.push({x: this.x, y: this.y});
+                if(this.path.length > 50) this.path.shift(); // Limit trail length
+
+                return true; // Alive
+            }
+
+            draw() {
+                // Draw Trail
+                ctx.beginPath();
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 1;
+                for(let p of this.path) ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+
+                // Draw Planet
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // Mouse Controls
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            dragStart = { x: e.clientX, y: e.clientY };
+            dragCurrent = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if(isDragging) dragCurrent = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if(!isDragging) return;
+            isDragging = false;
+            
+            // Calculate Velocity based on drag distance (Slingshot)
+            let vx = (dragStart.x - e.clientX) * 0.05;
+            let vy = (dragStart.y - e.clientY) * 0.05;
+            
+            planets.push(new Planet(dragStart.x, dragStart.y, vx, vy));
+            document.getElementById('count').innerText = planets.length;
+        });
+
+        function animate() {
+            // "Ghost" clearing effect for motion trails
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Sun
+            ctx.beginPath();
+            ctx.arc(sun.x, sun.y, sun.r, 0, Math.PI*2);
+            ctx.fillStyle = '#ffcc00';
+            ctx.shadowBlur = 50;
+            ctx.shadowColor = '#ffcc00';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Draw Aiming Line (Slingshot)
+            if(isDragging) {
+                ctx.beginPath();
+                ctx.moveTo(dragStart.x, dragStart.y);
+                ctx.lineTo(dragCurrent.x, dragCurrent.y);
+                ctx.strokeStyle = 'white';
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Update Planets
+            for(let i = planets.length - 1; i >= 0; i--) {
+                let alive = planets[i].update();
+                if(alive) planets[i].draw();
+                else planets.splice(i, 1); // Remove if crashed
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Photosynthesis</title>
+    <style>
+        body { margin: 0; background: #87CEEB; font-family: sans-serif; overflow: hidden; }
+        
+        /* The Lab Bench */
+        #bench { position: absolute; bottom: 0; width: 100%; height: 200px; background: #8B4513; }
+        
+        /* The Beaker & Plant */
+        #beaker { 
+            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+            width: 150px; height: 250px; border: 4px solid rgba(255,255,255,0.6); border-top: none;
+            background: rgba(135, 206, 235, 0.3); border-radius: 0 0 20px 20px; overflow: hidden;
+        }
+        #plant {
+            position: absolute; bottom: 0; left: 25px; width: 100px; height: 180px;
+            background: green; border-radius: 50px 50px 0 0; /* Simple plant shape */
+        }
+        
+        /* The Lamp */
+        #lamp {
+            position: absolute; bottom: 100px; left: 100px; width: 100px; height: 100px;
+            font-size: 80px; cursor: grab; transition: transform 0.1s;
+        }
+        
+        /* Bubbles */
+        .bubble {
+            position: absolute; width: 10px; height: 10px; background: rgba(255,255,255,0.8);
+            border-radius: 50%; animation: rise 2s linear infinite;
+        }
+        @keyframes rise { to { transform: translateY(-300px); opacity: 0; } }
+
+        /* HUD */
+        #hud { position: absolute; top: 20px; left: 20px; background: white; padding: 20px; border-radius: 10px; }
+        
+        .light-beam {
+            position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+            border-top: 50px solid transparent; border-bottom: 50px solid transparent;
+            border-left: 500px solid rgba(255, 255, 0, 0.3);
+            transform-origin: 0 50%; pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hud">
+        <h3>🌱 Photosynthesis Rate</h3>
+        <p>Drag the 💡 Lamp to change light intensity.</p>
+        <div>Rate: <b id="rateVal">0</b> bubbles/min</div>
+        <div>Distance: <b id="distVal">0</b> cm</div>
+    </div>
+
+    <div id="bench"></div>
+
+    <div id="beaker">
+        <div id="plant"></div>
+        <div id="bubbles-container"></div>
+    </div>
+
+    <div id="lamp" style="left: 100px;">
+        💡
+        <div class="light-beam"></div>
+    </div>
+
+    <script>
+        const lamp = document.getElementById('lamp');
+        const plant = document.getElementById('beaker');
+        const bubbleCont = document.getElementById('bubbles-container');
+        let isDragging = false;
+
+        // Bubble Spawner Logic
+        let bubbleInterval;
+
+        function updatePhysics() {
+            // Calculate Distance (Lamp center to Plant center)
+            let lampX = lamp.offsetLeft + 50;
+            let plantX = plant.offsetLeft + 75;
+            
+            let dist = Math.abs(plantX - lampX); // Pixels
+            
+            // Physics: Rate ~ 1 / Distance^2 (Inverse Square Law)
+            // Normalize for visual:
+            let rate = Math.max(0, 100000 / (dist * dist)); 
+            
+            // Cap rate
+            if (rate > 60) rate = 60; 
+            if (rate < 1) rate = 0;
+
+            document.getElementById('distVal').innerText = Math.round(dist/10);
+            document.getElementById('rateVal').innerText = Math.round(rate);
+
+            // Update Bubble Timer
+            clearInterval(bubbleInterval);
+            if (rate > 1) {
+                let msPerBubble = 60000 / (rate * 5); // Speed up for visual
+                bubbleInterval = setInterval(spawnBubble, msPerBubble);
+            }
+        }
+
+        function spawnBubble() {
+            let b = document.createElement('div');
+            b.className = 'bubble';
+            b.style.left = Math.random() * 80 + 10 + "px";
+            b.style.bottom = Math.random() * 50 + "px";
+            bubbleCont.appendChild(b);
+            
+            // Cleanup
+            setTimeout(() => b.remove(), 2000);
+        }
+
+        // Dragging Logic
+        lamp.addEventListener('mousedown', () => isDragging = true);
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => {
+            if(isDragging) {
+                let newX = e.clientX - 50;
+                // Limits
+                if (newX < 0) newX = 0;
+                if (newX > window.innerWidth - 100) newX = window.innerWidth - 100;
+                
+                lamp.style.left = newX + "px";
+                
+                // Rotate beam to point at plant
+                let lampX = newX + 50;
+                let plantX = plant.offsetLeft + 75;
+                let angle = (plantX - lampX) > 0 ? 0 : 180;
+                
+                lamp.querySelector('.light-beam').style.transform = `rotate(${angle}deg)`;
+                screenX
+                updatePhysics();
+            }
+        });
+
+        // Init
+        updatePhysics();
+    </script>
+</body>
+</html>

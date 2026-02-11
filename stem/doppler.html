@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Doppler Lab</title>
+    <style>
+        body { margin: 0; background: #222; overflow: hidden; font-family: sans-serif; color: white; }
+        .controls { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 8px; width: 200px; }
+        input[type=range] { width: 100%; margin: 10px 0; }
+        p { font-size: 14px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h3>🔊 Doppler Effect</h3>
+        <label>Source Speed (Mach)</label>
+        <input type="range" id="speed" min="0" max="2" step="0.1" value="0.5">
+        <p>0 = Stationary<br>1 = Speed of Sound (Sonic Boom)<br>2 = Supersonic</p>
+    </div>
+
+    <canvas id="simCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let waves = [];
+        let source = { x: 0, y: 0 };
+        let frame = 0;
+        
+        // Physics
+        const waveSpeed = 2; // Pixels per frame
+        let sourceSpeed = 0.5 * waveSpeed; 
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            source.y = height / 2;
+            source.x = 0; // Start at left
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        document.getElementById('speed').addEventListener('input', (e) => {
+            sourceSpeed = parseFloat(e.target.value) * waveSpeed;
+        });
+
+        function animate() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; // Trail effect
+            ctx.fillRect(0, 0, width, height);
+
+            // Move Source
+            source.x += sourceSpeed;
+            if (source.x > width + 100) {
+                source.x = 0;
+                waves = []; // Reset
+            }
+
+            // Emit Wave every 10 frames
+            if (frame % 15 === 0) {
+                waves.push({ x: source.x, y: source.y, r: 0 });
+            }
+            frame++;
+
+            // Draw Source
+            ctx.beginPath();
+            ctx.arc(source.x, source.y, 8, 0, Math.PI*2);
+            ctx.fillStyle = "#ff0";
+            ctx.fill();
+
+            // Draw Waves
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#0ff";
+            
+            for (let i = waves.length - 1; i >= 0; i--) {
+                let w = waves[i];
+                w.r += waveSpeed; // Expand
+                
+                ctx.beginPath();
+                ctx.arc(w.x, w.y, w.r, 0, Math.PI*2);
+                ctx.stroke();
+
+                // Remove old waves
+                if (w.r > width) waves.splice(i, 1);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

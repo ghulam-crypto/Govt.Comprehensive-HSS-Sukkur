@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Optics Lab</title>
+    <style>
+        body { margin: 0; background-color: #111; color: white; font-family: sans-serif; overflow: hidden; }
+        
+        #controls {
+            position: absolute; top: 10px; left: 10px; background: rgba(50, 50, 50, 0.8);
+            padding: 15px; border-radius: 8px; border: 1px solid #444;
+        }
+        
+        label { display: block; margin-top: 10px; font-size: 12px; color: #aaa; }
+        input[type=range] { width: 100%; }
+        select { background: #333; color: white; border: none; padding: 5px; width: 100%; margin-top: 5px; }
+
+        canvas { display: block; cursor: crosshair; }
+    </style>
+</head>
+<body>
+
+    <div id="controls">
+        <h3>🔦 Laser Lab</h3>
+        
+        <label>LASER ANGLE</label>
+        <input type="range" id="angle" min="0" max="90" value="45">
+        
+        <label>MATERIAL (Refractive Index)</label>
+        <select id="material">
+            <option value="1.00">Air (n=1.0)</option>
+            <option value="1.33">Water (n=1.33)</option>
+            <option value="1.50" selected>Glass (n=1.5)</option>
+            <option value="2.42">Diamond (n=2.42)</option>
+        </select>
+        
+        <div style="margin-top: 15px; font-size: 11px; color: #888;">
+            *Drag the Glass Block to move it.<br>
+            *Observe how the light bends (Snell's Law).
+        </div>
+    </div>
+
+    <canvas id="opticsCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('opticsCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State
+        let laser = { x: 0, y: 0, angle: 45 };
+        let block = { x: 400, y: 200, w: 200, h: 300, n: 1.5 }; // Glass block
+        let isDragging = false;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            laser.y = canvas.height / 2;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        // Physics Math: Snell's Law
+        // n1 * sin(theta1) = n2 * sin(theta2)
+        function getRefractionAngle(incidentAngle, n1, n2) {
+            const rad = incidentAngle * (Math.PI / 180);
+            const sinTheta2 = (n1 / n2) * Math.sin(rad);
+            
+            if (sinTheta2 > 1) return null; // Total Internal Reflection (critical angle)
+            return Math.asin(sinTheta2) * (180 / Math.PI);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Laser Source
+            ctx.fillStyle = '#444';
+            ctx.fillRect(0, laser.y - 10, 50, 20); // Laser Box
+
+            // 2. Draw Glass Block
+            ctx.fillStyle = 'rgba(100, 200, 255, 0.3)';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.fillRect(block.x, block.y, block.w, block.h);
+            ctx.strokeRect(block.x, block.y, block.w, block.h);
+            
+            // Label the block
+            ctx.fillStyle = 'white';
+            ctx.fillText(`Material (n=${block.n})`, block.x + 10, block.y + 20);
+
+            // 3. Draw Laser Beam (Ray Tracing)
+            ctx.beginPath();
+            ctx.strokeStyle = '#ff0055'; // Red Laser Color
+            ctx.lineWidth = 3;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#ff0055';
+
+            // Start Point
+            let lx = 50; 
+            let ly = laser.y;
+            ctx.moveTo(lx, ly);
+
+            // Beam 1: Air to Block Surface
+            const rad = laser.angle * (Math.PI / 180);
+            
+            // Calculate intersection with left side of block
+            // This is simplified: assumes laser is always to the left
+            const dx = block.x - lx;
+            const dy = Math.tan(rad) * dx;
+            
+            let hitY = ly + dy;
+            
+            // Check if it actually hits the block
+            if (hitY >= block.y && hitY <= block.y + block.h) {
+                ctx.lineTo(block.x, hitY); // Draw to surface
+                
+                // Beam 2: Inside the Block (Refracted)
+                // Snell's Law: Air (1.0) -> Material (n)
+                let refAngle = getRefractionAngle(laser.angle, 1.0, block.n);
+                
+                if (refAngle !== null) {
+                    const refRad = refAngle * (Math.PI / 180);
+                    const dx2 = block.w;
+                    const dy2 = Math.tan(refRad) * dx2;
+                    let exitY = hitY + dy2;
+                    
+                    ctx.lineTo(block.x + block.w, exitY); // Draw through block
+                    
+                    // Beam 3: Leaving the Block (Back to Air)
+                    // Material (n) -> Air (1.0)
+                    // The exit angle is the same as original incident angle (if sides parallel)
+                    const exitRad = laser.angle * (Math.PI / 180); 
+                    ctx.lineTo(canvas.width, exitY + Math.tan(exitRad) * (canvas.width - (block.x + block.w)));
+                }
+            } else {
+                // Missed the block, go straight
+                ctx.lineTo(canvas.width, ly + Math.tan(rad) * canvas.width);
+            }
+            
+            ctx.stroke();
+            ctx.shadowBlur = 0; // Reset
+            
+            // Draw Normal Line (Dotted) at hit point
+            if (hitY >= block.y && hitY <= block.y + block.h) {
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#888';
+                ctx.lineWidth = 1;
+                ctx.moveTo(block.x - 50, hitY);
+                ctx.lineTo(block.x + 50, hitY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        // Inputs
+        document.getElementById('angle').addEventListener('input', (e) => {
+            laser.angle = parseInt(e.target.value);
+            draw();
+        });
+        document.getElementById('material').addEventListener('change', (e) => {
+            block.n = parseFloat(e.target.value);
+            draw();
+        });
+
+        // Drag Logic for Block
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.clientX > block.x && e.clientX < block.x + block.w &&
+                e.clientY > block.y && e.clientY < block.y + block.h) {
+                isDragging = true;
+            }
+        });
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                block.x = e.clientX - block.w/2;
+                block.y = e.clientY - block.h/2;
+                draw();
+            }
+        });
+        canvas.addEventListener('mouseup', () => isDragging = false);
+
+        // Init
+        resize();
+    </script>
+</body>
+</html>

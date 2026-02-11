@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Decay Lab</title>
+    <style>
+        body { margin: 0; background: #111; color: white; font-family: monospace; display: flex; height: 100vh; }
+        
+        #atom-grid { 
+            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(10px, 1fr)); 
+            gap: 1px; padding: 10px; align-content: start;
+        }
+        .atom { width: 10px; height: 10px; background: #e74c3c; border-radius: 2px; } /* Parent (Red) */
+        .stable { background: #2ecc71; } /* Daughter (Green) */
+
+        #sidebar { width: 300px; background: #222; padding: 20px; border-left: 1px solid #444; display: flex; flex-direction: column; }
+        
+        .stat-box { font-size: 18px; margin-bottom: 20px; }
+        button { padding: 10px; background: #3498db; color: white; border: none; cursor: pointer; font-size: 16px; margin-top: auto; }
+        
+        /* Simple CSS Graph */
+        #graph { height: 200px; border-left: 2px solid white; border-bottom: 2px solid white; display: flex; align-items: flex-end; gap: 2px; margin-top: 20px; }
+        .bar { width: 10px; background: #e74c3c; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <div id="atom-grid"></div>
+
+    <div id="sidebar">
+        <h2>☢️ Half-Life Sim</h2>
+        
+        <div class="stat-box" style="color:#e74c3c">Parent Atoms: <b id="countP">0</b></div>
+        <div class="stat-box" style="color:#2ecc71">Stable Atoms: <b id="countS">0</b></div>
+        <div class="stat-box">Half-Lives: <b id="time">0</b></div>
+
+        <div id="graph"></div>
+        
+        <p style="font-size: 12px; color: #888;">
+            Each "tick", every red atom has a 50% chance to decay.
+        </p>
+        
+        <button onclick="reset()">🔁 RESET SIMULATION</button>
+    </div>
+
+    <script>
+        const grid = document.getElementById('atom-grid');
+        const TOTAL_ATOMS = 1000;
+        let atoms = []; // 1 = Parent, 0 = Stable
+        let timer;
+        let halfLives = 0;
+
+        function init() {
+            grid.innerHTML = "";
+            atoms = [];
+            for(let i=0; i<TOTAL_ATOMS; i++) {
+                let div = document.createElement('div');
+                div.className = "atom";
+                grid.appendChild(div);
+                atoms.push({ el: div, active: true });
+            }
+            updateStats();
+        }
+
+        function decayStep() {
+            let activeCount = atoms.filter(a => a.active).length;
+            if(activeCount === 0) { clearInterval(timer); return; }
+
+            // Add bar to graph
+            let bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = (activeCount / TOTAL_ATOMS * 100) + "%";
+            document.getElementById('graph').appendChild(bar);
+
+            // Decay Logic (50% chance for each atom)
+            atoms.forEach(a => {
+                if(a.active && Math.random() < 0.5) {
+                    a.active = false;
+                    a.el.className = "atom stable";
+                }
+            });
+
+            halfLives++;
+            updateStats();
+        }
+
+        function updateStats() {
+            let p = atoms.filter(a => a.active).length;
+            document.getElementById('countP').innerText = p;
+            document.getElementById('countS').innerText = TOTAL_ATOMS - p;
+            document.getElementById('time').innerText = halfLives;
+        }
+
+        function reset() {
+            clearInterval(timer);
+            halfLives = 0;
+            document.getElementById('graph').innerHTML = "";
+            init();
+            timer = setInterval(decayStep, 1000); // 1 tick per second
+        }
+
+        reset();
+    </script>
+</body>
+</html>

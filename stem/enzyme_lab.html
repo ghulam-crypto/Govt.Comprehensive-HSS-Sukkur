@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BioChem Lab: Cofactors & Coenzymes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&family=Inter:wght@400;800&display=swap');
+
+        :root {
+            --bg: #0f172a;
+            --panel: rgba(30, 41, 59, 0.85);
+            --text: #f8fafc;
+            --accent: #0ea5e9;
+            --cofactor: #a855f7; /* Purple */
+            --coenzyme: #f59e0b; /* Orange */
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SIDEBAR CONTROLS */
+        aside {
+            width: 320px;
+            background: var(--panel);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .mode-switch {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 4px;
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .mode-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .mode-btn.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .control-group {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent); }
+
+        .legend {
+            margin-top: auto;
+            font-size: 12px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .l-item { display: flex; align-items: center; gap: 8px; color: #94a3b8; }
+        .dot { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* MAIN CANVAS AREA */
+        main {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            cursor: crosshair;
+        }
+
+        /* Floating Info Panel */
+        #info-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: #94a3b8;
+        }
+        .stat-val { color: var(--text); font-weight: bold; }
+        .alert { color: #f43f5e; font-weight: bold; display: none; margin-top:5px; }
+
+    </style>
+</head>
+<body>
+
+<aside>
+    <h1>Biochem Structure Lab</h1>
+    <p style="font-size:12px; color:#94a3b8; margin-bottom:20px;">Holoenzyme Formation & Kinetics</p>
+
+    <div class="mode-switch">
+        <button class="mode-btn active" onclick="setMode('cofactor')" id="btn-cofactor">Inorganic Cofactor</button>
+        <button class="mode-btn" onclick="setMode('coenzyme')" id="btn-coenzyme">Organic Coenzyme</button>
+    </div>
+
+    <div class="control-group">
+        <label>
+            <span>Helper Concentration</span>
+            <span id="helperVal">Low</span>
+        </label>
+        <input type="range" id="helperRange" min="0" max="50" value="0">
+    </div>
+
+    <div class="control-group">
+        <label>
+            <span>Substrate (Food)</span>
+            <span id="subVal">20</span>
+        </label>
+        <input type="range" id="subRange" min="0" max="100" value="20">
+    </div>
+
+    <div class="control-group" style="border-left: 3px solid #f43f5e;">
+        <label>Temperature (Kinetic Energy)</label>
+        <input type="range" id="tempRange" min="0" max="80" value="37">
+        <div style="font-size:10px; color:#64748b; text-align:right; margin-top:2px;">Optimum: 37°C</div>
+    </div>
+
+    <div class="legend">
+        <div class="l-item"><span class="dot" style="background:#475569; border:1px solid #94a3b8;"></span> Apoenzyme (Inactive)</div>
+        <div class="l-item"><span class="dot" style="background:linear-gradient(135deg, #0ea5e9, #2563eb);"></span> Holoenzyme (Active)</div>
+        <div class="l-item" id="helperLegend"><span class="dot" style="background:#a855f7;"></span> Cofactor (Metal Ion)</div>
+        <div class="l-item"><span class="dot" style="background:#fcd34d;"></span> Substrate</div>
+    </div>
+</aside>
+
+<main>
+    <div id="info-overlay">
+        <div class="stat-row">
+            <span>Status:</span>
+            <span class="stat-val" id="statusText" style="color:#f43f5e">INACTIVE (Apoenzyme)</span>
+        </div>
+        <div class="stat-row">
+            <span>Reaction Rate:</span>
+            <span class="stat-val" id="rateText">0 rxn/sec</span>
+        </div>
+        <div class="stat-row">
+            <span>Active Enzymes:</span>
+            <span class="stat-val" id="activeCount">0%</span>
+        </div>
+        <div class="alert" id="denatureAlert">⚠️ DENATURED: HIGH HEAT</div>
+    </div>
+    <canvas id="simCanvas"></canvas>
+</main>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // --- CONFIGURATION ---
+    let width, height;
+    
+    const STATE = {
+        mode: 'cofactor', // 'cofactor' or 'coenzyme'
+        helperCount: 0,
+        substrateCount: 20,
+        temp: 37,
+        enzymes: [],
+        molecules: [],
+        particles: [],
+        rxnCount: 0,
+        lastTime: Date.now()
+    };
+
+    // --- CLASSES ---
+
+    class Particle {
+        constructor(x, y) {
+            this.x = x; this.y = y;
+            this.vx = (Math.random()-0.5)*3; 
+            this.vy = (Math.random()-0.5)*3;
+            this.life = 1.0;
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy;
+            this.life -= 0.05;
+        }
+        draw(ctx) {
+            ctx.globalAlpha = this.life;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 1.0;
+        }
+    }
+
+    class Molecule {
+        constructor(type) {
+            this.type = type; // 'substrate', 'helper', 'product'
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            let a = Math.random() * Math.PI * 2;
+            this.vx = Math.cos(a);
+            this.vy = Math.sin(a);
+            
+            // Size definition based on biology
+            if (type === 'helper') {
+                // Cofactors (ions) are tiny, Coenzymes (vitamins) are medium
+                this.radius = (STATE.mode === 'cofactor') ? 4 : 8;
+            } else if (type === 'substrate') {
+                this.radius = 6;
+            } else {
+                this.radius = 5;
+            }
+            
+            this.markedForDeletion = false;
+        }
+
+        move(speed) {
+            this.x += this.vx * speed;
+            this.y += this.vy * speed;
+            if(this.x < 0 || this.x > width) this.vx *= -1;
+            if(this.y < 0 || this.y > height) this.vy *= -1;
+        }
+
+        draw(ctx) {
+            // Realistic Shading
+            let r = this.radius;
+            let grad = ctx.createRadialGradient(this.x - r/3, this.y - r/3, r/4, this.x, this.y, r);
+            
+            if (this.type === 'helper') {
+                if (STATE.mode === 'cofactor') {
+                    // Metal Ion (Magnesium/Iron) - Shiny Metallic Purple/Grey
+                    grad.addColorStop(0, '#e9d5ff'); 
+                    grad.addColorStop(1, '#9333ea');
+                } else {
+                    // Coenzyme (Vitamin) - Organic Orange
+                    grad.addColorStop(0, '#fdba74');
+                    grad.addColorStop(1, '#ea580c');
+                }
+            } else if (this.type === 'substrate') {
+                // Gold
+                grad.addColorStop(0, '#fde047');
+                grad.addColorStop(1, '#ca8a04');
+            } else {
+                // Product (Blue)
+                grad.addColorStop(0, '#7dd3fc');
+                grad.addColorStop(1, '#0284c7');
+            }
+
+            ctx.fillStyle = grad;
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            
+            ctx.beginPath();
+            
+            // SHAPES
+            if (this.type === 'helper') {
+                if (STATE.mode === 'cofactor') {
+                    // Ion = Sphere
+                    ctx.arc(this.x, this.y, r, 0, Math.PI*2);
+                } else {
+                    // Coenzyme = Complex Shape (Hexagonish)
+                    ctx.moveTo(this.x + r, this.y);
+                    for(let i=1; i<6; i++) {
+                        ctx.lineTo(this.x + r * Math.cos(i * 2 * Math.PI / 6), this.y + r * Math.sin(i * 2 * Math.PI / 6));
+                    }
+                }
+            } else if (this.type === 'substrate') {
+                // Triangle
+                ctx.moveTo(this.x, this.y - r);
+                ctx.lineTo(this.x + r, this.y + r);
+                ctx.lineTo(this.x - r, this.y + r);
+            } else {
+                ctx.arc(this.x, this.y, r, 0, Math.PI*2);
+            }
+            
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    class Enzyme {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.radius = 50;
+            this.angle = Math.random() * Math.PI * 2;
+            
+            this.helper = null; // The cofactor/coenzyme
+            this.substrate = null; // The food
+            this.timer = 0;
+            
+            this.state = 'apo'; // 'apo' (inactive), 'holo' (active), 'reacting', 'denatured'
+        }
+
+        update(speed, isDenatured) {
+            // Movement
+            this.x += Math.cos(this.angle + Date.now()/2000) * 0.2 * speed;
+            this.y += Math.sin(this.angle + Date.now()/2000) * 0.2 * speed;
+
+            // --- STATE MACHINE ---
+            
+            if (isDenatured) {
+                this.state = 'denatured';
+                this.releaseAll();
+                return;
+            }
+
+            // 1. APOENZYME STATE (Inactive)
+            if (!this.helper) {
+                this.state = 'apo';
+                // Can ONLY catch Helper (Cofactor/Coenzyme)
+                // CANNOT catch Substrate yet (Active site is wrong shape)
+                this.detectCollision('helper');
+            } 
+            
+            // 2. HOLOENZYME STATE (Active)
+            else {
+                // If we have substrate -> Reacting
+                if (this.substrate) {
+                    this.state = 'reacting';
+                    this.timer++;
+                    if (this.timer > 60) {
+                        // REACTION DONE
+                        this.finishReaction();
+                    }
+                } else {
+                    this.state = 'holo';
+                    // Now we can catch Substrate
+                    this.detectCollision('substrate');
+                    
+                    // Small chance to lose helper (reversible binding)
+                    if (Math.random() < 0.005) {
+                        this.helper.markedForDeletion = false;
+                        this.helper = null;
+                    }
+                }
+            }
+        }
+
+        detectCollision(targetType) {
+            for (let m of STATE.molecules) {
+                if (m.type === targetType && !m.markedForDeletion) {
+                    let dist = Math.hypot(this.x - m.x, this.y - m.y);
+                    if (dist < this.radius) {
+                        if (targetType === 'helper') this.helper = m;
+                        if (targetType === 'substrate') this.substrate = m;
+                        m.markedForDeletion = true;
+                        return;
+                    }
+                }
+            }
+        }
+
+        finishReaction() {
+            // Spawn product
+            let p = new Molecule('product');
+            p.x = this.x + 40; p.y = this.y;
+            STATE.molecules.push(p);
+            
+            // VFX
+            for(let i=0; i<5; i++) STATE.particles.push(new Particle(this.x+40, this.y));
+            
+            // Clear substrate
+            this.substrate = null;
+            this.timer = 0;
+            STATE.rxnCount++;
+        }
+
+        releaseAll() {
+            if(this.helper) { this.helper.markedForDeletion = false; this.helper = null; }
+            if(this.substrate) { this.substrate.markedForDeletion = false; this.substrate = null; }
+        }
+
+        draw(ctx) {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            
+            // Rotate slowly
+            ctx.rotate(Math.sin(Date.now()/1000) * 0.1);
+
+            // --- DRAW PROTEIN STRUCTURE ---
+            
+            // Color Logic
+            let color1 = '#475569'; // Grey (Apo)
+            let color2 = '#64748b';
+            
+            if (this.state === 'holo' || this.state === 'reacting') {
+                color1 = '#0369a1'; // Blue (Active)
+                color2 = '#0ea5e9';
+            }
+            if (this.state === 'denatured') {
+                color1 = '#450a0a'; // Burnt red
+                color2 = '#7f1d1d';
+            }
+
+            // Create organic "Cloud" gradient
+            let grad = ctx.createRadialGradient(-10, -10, 5, 0, 0, this.radius);
+            grad.addColorStop(0, color2);
+            grad.addColorStop(1, color1);
+            ctx.fillStyle = grad;
+            
+            // Shadow
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = (this.state === 'holo') ? 'rgba(14, 165, 233, 0.4)' : 'rgba(0,0,0,0.5)';
+
+            // PATH DRAWING
+            ctx.beginPath();
+            
+            // If Apoenzyme, the Active site is "Closed" or "Wrong Shape"
+            // If Holoenzyme, the Active site opens up (Induced Fit)
+            
+            // Main Body
+            ctx.arc(0, 0, this.radius, 0.5, Math.PI * 2 - 0.5); // C-shape
+            
+            // The "Notch" (Active Site) Logic
+            // Notch is on the Right side (Angle 0)
+            
+            if (this.state === 'denatured') {
+                ctx.lineTo(0,0); // Collapsed
+            } else if (this.state === 'apo') {
+                // APO: Small, distinct slot for COFACTOR only. Active site blocked.
+                ctx.lineTo(20, 15); // Bottom lip
+                ctx.lineTo(-10, 0);  // Deep slot for cofactor
+                ctx.lineTo(20, -15); // Top lip (Sharp angle, wont fit substrate)
+            } else {
+                // HOLO: Cofactor is inserted, pushing the shape open to accept Substrate
+                ctx.lineTo(20, 30); // Wide bottom lip
+                // The cofactor sits at (-10, 0)
+                ctx.lineTo(20, -30); // Wide top lip (Fits Triangle Substrate)
+            }
+            
+            ctx.closePath();
+            ctx.fill();
+            
+            // Internal Shine
+            ctx.fillStyle = 'rgba(255,255,255,0.05)';
+            ctx.fill();
+
+            // --- DRAW CONTENTS ---
+
+            ctx.shadowBlur = 0;
+
+            // 1. Draw Helper (Cofactor/Coenzyme)
+            if (this.helper) {
+                ctx.save();
+                ctx.translate(-15, 0); // Position deep in the protein
+                
+                // If Coenzyme, draw distinct organic shape
+                if (STATE.mode === 'coenzyme') {
+                    ctx.fillStyle = '#ea580c';
+                    ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(8,0); ctx.lineTo(0,8); ctx.lineTo(-8,0); ctx.fill();
+                } else {
+                    // Metal Ion
+                    ctx.fillStyle = '#a855f7';
+                    ctx.beginPath(); ctx.arc(0,0,6,0,Math.PI*2); ctx.fill();
+                    // Glow
+                    ctx.shadowColor='#a855f7'; ctx.shadowBlur=10; ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            // 2. Draw Substrate
+            if (this.substrate) {
+                ctx.save();
+                ctx.translate(25, 0); // Position in active site mouth
+                
+                // Triangle
+                ctx.fillStyle = '#fde047';
+                ctx.beginPath();
+                ctx.moveTo(0, -8); ctx.lineTo(8, 6); ctx.lineTo(-8, 6);
+                ctx.fill();
+                
+                // Progress Bar
+                if (this.state === 'reacting') {
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(-10, -12, 20 * (this.timer/60), 4);
+                }
+                
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+    }
+
+    // --- LOGIC ---
+
+    function init() {
+        resize();
+        window.addEventListener('resize', resize);
+        
+        // Create 3 big enzymes
+        for(let i=0; i<3; i++) {
+            STATE.enzymes.push(new Enzyme());
+            STATE.enzymes[i].x = width/2 + (i-1)*150;
+            STATE.enzymes[i].y = height/2;
+        }
+
+        loop();
+    }
+
+    function resize() {
+        width = canvas.parentElement.clientWidth;
+        height = canvas.parentElement.clientHeight;
+        canvas.width = width;
+        canvas.height = height;
+    }
+
+    function setMode(mode) {
+        STATE.mode = mode;
+        // Reset molecules
+        STATE.molecules = [];
+        STATE.enzymes.forEach(e => e.releaseAll());
+        
+        // Update Buttons
+        document.getElementById('btn-cofactor').className = mode==='cofactor' ? 'mode-btn active' : 'mode-btn';
+        document.getElementById('btn-coenzyme').className = mode==='coenzyme' ? 'mode-btn active' : 'mode-btn';
+        
+        // Update Legend Color
+        const leg = document.querySelector('#helperLegend .dot');
+        leg.style.background = mode==='cofactor' ? '#a855f7' : '#ea580c';
+        document.querySelector('#helperLegend').firstChild.nextSibling.nodeValue = mode==='cofactor' ? " Cofactor (Metal Ion)" : " Coenzyme (Vitamin)";
+    }
+    window.setMode = setMode;
+
+    function managePopulation() {
+        // Helpers
+        let hCount = STATE.molecules.filter(m => m.type === 'helper').length;
+        if (hCount < STATE.helperCount) STATE.molecules.push(new Molecule('helper'));
+        if (hCount > STATE.helperCount) removeRandom('helper');
+
+        // Substrates
+        let sCount = STATE.molecules.filter(m => m.type === 'substrate').length;
+        if (sCount < STATE.substrateCount) STATE.molecules.push(new Molecule('substrate'));
+        if (sCount > STATE.substrateCount) removeRandom('substrate');
+    }
+
+    function removeRandom(type) {
+        for(let i=0; i<STATE.molecules.length; i++) {
+            if(STATE.molecules[i].type === type && !STATE.molecules[i].markedForDeletion) {
+                STATE.molecules.splice(i, 1);
+                return;
+            }
+        }
+    }
+
+    function loop() {
+        ctx.clearRect(0,0,width,height);
+
+        // Input Readings
+        STATE.helperCount = parseInt(document.getElementById('helperRange').value);
+        STATE.substrateCount = parseInt(document.getElementById('subRange').value);
+        STATE.temp = parseInt(document.getElementById('tempRange').value);
+
+        managePopulation();
+
+        // Calculate Physics State
+        let isDenatured = STATE.temp > 55;
+        let speed = (STATE.temp + 5) / 40;
+
+        // UI Updates
+        document.getElementById('denatureAlert').style.display = isDenatured ? 'block' : 'none';
+        
+        let activeCount = STATE.enzymes.filter(e => e.state === 'holo' || e.state === 'reacting').length;
+        let pct = Math.round((activeCount / STATE.enzymes.length)*100);
+        document.getElementById('activeCount').innerText = pct + "%";
+        
+        if (activeCount === 0) {
+            document.getElementById('statusText').innerText = "INACTIVE (Apoenzyme)";
+            document.getElementById('statusText').style.color = "#94a3b8";
+        } else {
+            document.getElementById('statusText').innerText = "SYSTEM ACTIVE";
+            document.getElementById('statusText').style.color = "#0ea5e9";
+        }
+
+        // Rate
+        if (Date.now() - STATE.lastTime > 1000) {
+            document.getElementById('rateText').innerText = STATE.rxnCount + " rxn/sec";
+            STATE.rxnCount = 0;
+            STATE.lastTime = Date.now();
+        }
+
+        // --- DRAWING ---
+
+        // Molecules
+        for (let i = STATE.molecules.length - 1; i >= 0; i--) {
+            let m = STATE.molecules[i];
+            if (m.markedForDeletion) { STATE.molecules.splice(i,1); continue; }
+            
+            m.move(speed);
+            m.draw(ctx);
+        }
+
+        // Enzymes
+        STATE.enzymes.forEach(e => {
+            e.update(speed, isDenatured);
+            e.draw(ctx);
+        });
+
+        // Particles
+        for(let i=STATE.particles.length-1; i>=0; i--) {
+            let p = STATE.particles[i];
+            p.update();
+            p.draw(ctx);
+            if(p.life <= 0) STATE.particles.splice(i,1);
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    init();
+
+</script>
+</body>
+</html>

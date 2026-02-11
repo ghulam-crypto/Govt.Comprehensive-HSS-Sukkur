@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Ripple Tank</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; color: white; font-family: sans-serif; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #overlay { position: absolute; top: 20px; left: 20px; pointer-events: none; }
+        h1 { margin: 0; text-shadow: 0 2px 5px black; }
+        p { color: #aaa; background: rgba(0,0,0,0.5); display: inline-block; padding: 5px; }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <h1>🌊 Wave Interference Lab</h1>
+        <p>Click & Drag to create ripples. Watch them bounce and mix.</p>
+    </div>
+    <canvas id="water"></canvas>
+    <script>
+        const canvas = document.getElementById('water');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        
+        // Wave Algorithm Buffers
+        let current, previous;
+        const damping = 0.95; // How fast waves die out
+        
+        function resize() {
+            width = window.innerWidth >> 1; // Lower res for speed
+            height = window.innerHeight >> 1;
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Init arrays
+            current = new Float32Array(width * height);
+            previous = new Float32Array(width * height);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function update() {
+            // The Magic Wave Equation
+            for (let i = width; i < width * height - width; i++) {
+                // Determine new height based on neighbors
+                let val = (previous[i-1] + previous[i+1] + 
+                           previous[i-width] + previous[i+width]) / 2 - current[i];
+                
+                val *= damping;
+                current[i] = val; // Swap buffers logic happens below
+            }
+
+            // Draw
+            let imgData = ctx.getImageData(0, 0, width, height);
+            let data = imgData.data;
+
+            for (let i = 0; i < width * height; i++) {
+                let val = current[i];
+                // Color mapping: Blue water logic
+                // Clamp value -128 to 128 usually
+                let c = Math.max(0, Math.min(255, val * 10 + 100));
+                
+                data[i*4] = c;     // R
+                data[i*4+1] = c + 50; // G (Cyan tint)
+                data[i*4+2] = 255; // B
+                data[i*4+3] = 255; // Alpha
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            // Swap buffers
+            let temp = previous;
+            previous = current;
+            current = temp;
+
+            requestAnimationFrame(update);
+        }
+
+        // Interaction
+        let isDown = false;
+        canvas.addEventListener('mousedown', () => isDown = true);
+        canvas.addEventListener('mouseup', () => isDown = false);
+        canvas.addEventListener('mousemove', (e) => {
+            if(isDown) {
+                // Scale mouse to low-res canvas
+                let x = Math.floor(e.clientX / 2);
+                let y = Math.floor(e.clientY / 2);
+                // Create ripple
+                if(x > 1 && x < width-1 && y > 1 && y < height-1) {
+                    previous[y * width + x] = 500;
+                }
+            }
+        });
+
+        // Start Raindrops automatically
+        setInterval(() => {
+            let x = Math.floor(Math.random() * width);
+            let y = Math.floor(Math.random() * height);
+            previous[y * width + x] = 500;
+        }, 500);
+
+        update();
+    </script>
+</body>
+</html>

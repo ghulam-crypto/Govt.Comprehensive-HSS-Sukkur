@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My School STEM Lab</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: white; text-align: center; margin: 0; padding: 40px; }
+        h1 { font-size: 3em; margin-bottom: 10px; background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p { color: #94a3b8; font-size: 1.2em; margin-bottom: 50px; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+        
+        .card { 
+            background: #1e293b; padding: 30px; border-radius: 15px; text-decoration: none; color: white; 
+            transition: transform 0.2s, background 0.2s; border: 1px solid #334155; 
+        }
+        .card:hover { transform: translateY(-5px); background: #334155; border-color: #4facfe; }
+        
+        .icon { font-size: 3em; margin-bottom: 20px; display: block; }
+        h3 { margin: 0; font-size: 1.5em; }
+        .desc { color: #94a3b8; margin-top: 10px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Virtual STEM Lab</h1>
+    <p>Select a simulation to begin your experiment.</p>
+
+    <div class="grid">
+        <a href="cannon.html" class="card">
+            <span class="icon">💣</span>
+            <h3>Cannon Lab</h3>
+            <div class="desc">Physics: Projectile Motion & Gravity</div>
+        </a>
+        <a href="optics.html" class="card">
+            <span class="icon">🔦</span>
+            <h3>Optics Lab</h3>
+            <div class="desc">Physics: Light Refraction & Lenses</div>
+        </a>
+        <a href="pendulum.html" class="card">
+            <span class="icon">⏱️</span>
+            <h3>Pendulum</h3>
+            <div class="desc">Physics: Simple Harmonic Motion</div>
+        </a>
+
+        <a href="gas_lab.html" class="card">
+            <span class="icon">🧪</span>
+            <h3>Gas Properties</h3>
+            <div class="desc">Chemistry: Boyle's Law & Heat</div>
+        </a>
+
+        <a href="orbit.html" class="card">
+            <span class="icon">🪐</span>
+            <h3>Gravity Sandbox</h3>
+            <div class="desc">Space: Orbits & Solar Systems</div>
+        </a>
+        
+         <a href="logic_lab.html" class="card">
+            <span class="icon">🔌</span>
+            <h3>Logic Gates</h3>
+            <div class="desc">Computer Science: Boolean Logic</div>
+        </a>
+    </div>
+
+    <footer style="margin-top: 50px; color: #475569; font-size: 0.8em;">
+        &copy; 2026 Virtual STEM Academy. Built by Ghulam Mehdi.
+    </footer>
+
+</body>
+</html>

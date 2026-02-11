@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STEM Seismograph</title>
+    <style>
+        body { margin: 0; background: #333; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        canvas { background: #fffde7; border: 10px solid #555; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .controls { margin-top: 20px; text-align: center; }
+        button { padding: 15px 30px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; color: white; margin: 10px; }
+        .p-wave { background: #f39c12; }
+        .s-wave { background: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <h1>🌋 Digital Seismograph</h1>
+    <p>Simulate Seismic Waves (P-Waves are fast/small, S-Waves are slow/large)</p>
+
+    <canvas id="seismoCanvas" width="800" height="300"></canvas>
+
+    <div class="controls">
+        <button class="p-wave" onclick="triggerWave('P')">Trigger P-Wave (Primary)</button>
+        <button class="s-wave" onclick="triggerWave('S')">Trigger S-Wave (Secondary)</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('seismoCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Data Buffer (Scrolling)
+        let data = new Array(canvas.width).fill(0);
+        let vibration = 0;
+        let shakeMode = null; // 'P' or 'S'
+        let time = 0;
+
+        function triggerWave(type) {
+            shakeMode = type;
+            // P-Wave = High Frequency, Low Amplitude
+            // S-Wave = Low Frequency, High Amplitude
+            vibration = type === 'P' ? 20 : 80;
+        }
+
+        function animate() {
+            // Scroll Data: Remove first, add new at end
+            data.shift();
+            
+            // Calculate new reading
+            let reading = 0;
+            
+            if (vibration > 0) {
+                // Decay vibration
+                vibration *= 0.98; 
+                
+                if (shakeMode === 'P') {
+                    // Fast shake
+                    reading = (Math.random() - 0.5) * vibration;
+                } else {
+                    // Slow big shake (Sine wave)
+                    time += 0.5;
+                    reading = Math.sin(time) * vibration + (Math.random()-0.5)*5;
+                }
+            } else {
+                // Background Noise (Microseisms)
+                reading = (Math.random() - 0.5) * 2;
+                shakeMode = null;
+            }
+            
+            data.push(reading);
+
+            // Draw Grid (Graph Paper)
+            ctx.fillStyle = '#fffde7'; // Paper color
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            // Draw Grid Lines
+            for(let x=0; x<canvas.width; x+=50) { ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); }
+            for(let y=0; y<canvas.height; y+=50) { ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); }
+            ctx.stroke();
+
+            // Draw Needle Line
+            ctx.strokeStyle = '#2c3e50'; // Ink color
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let centerY = canvas.height / 2;
+            
+            for (let i = 0; i < data.length; i++) {
+                ctx.lineTo(i, centerY + data[i]);
+            }
+            ctx.stroke();
+
+            // Draw Needle Pen
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(canvas.width-5, centerY + data[data.length-1], 4, 0, Math.PI*2);
+            ctx.fill();
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Physics Cannon</title>
+    <style>
+        body { margin: 0; font-family: 'Arial', sans-serif; overflow: hidden; background-color: #87CEEB; /* Sky Blue */ }
+        
+        /* Control Panel */
+        #controls {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 12px;
+            display: flex; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            align-items: center; z-index: 10;
+        }
+        
+        .input-group { text-align: center; }
+        label { display: block; font-size: 12px; font-weight: bold; color: #555; }
+        input[type=range] { width: 120px; }
+        
+        button {
+            background-color: #ff4757; color: white; border: none; padding: 10px 25px;
+            font-size: 16px; border-radius: 25px; cursor: pointer; font-weight: bold;
+            transition: transform 0.1s;
+        }
+        button:active { transform: scale(0.95); }
+        
+        /* Stats Overlay */
+        #stats {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(0, 0, 0, 0.7); color: white; padding: 15px;
+            border-radius: 8px; font-family: monospace;
+        }
+
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="stats">
+        <div>Time: <span id="timeVal">0.0</span>s</div>
+        <div>Distance: <span id="distVal">0.0</span>m</div>
+        <div>Height: <span id="heightVal">0.0</span>m</div>
+    </div>
+
+    <div id="controls">
+        <div class="input-group">
+            <label>ANGLE (<span id="angleDisp">45</span>°)</label>
+            <input type="range" id="angle" min="0" max="90" value="45">
+        </div>
+        <div class="input-group">
+            <label>POWER (<span id="speedDisp">15</span> m/s)</label>
+            <input type="range" id="speed" min="5" max="30" value="15">
+        </div>
+        <button onclick="fire()">🔥 FIRE!</button>
+        <button onclick="clearTrace()" style="background-color: #2f3542;">Clear</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Resize Canvas
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawScene();
+        }
+        window.addEventListener('resize', resize);
+
+        // Physics State
+        let balls = []; // Can have multiple balls
+        const gravity = 9.8; 
+        let animationId;
+        
+        // Ground Level (Pixels from bottom)
+        const groundHeight = 100;
+
+        class Ball {
+            constructor(angle, velocity) {
+                this.radius = 10;
+                this.x = 50; // Start Position X
+                this.y = canvas.height - groundHeight - this.radius; // Start Position Y
+                
+                // Convert Angle to Radians
+                const rad = angle * (Math.PI / 180);
+                
+                // Velocity Components (Scale up for visual effect)
+                this.vx = Math.cos(rad) * velocity * 5; 
+                this.vy = -Math.sin(rad) * velocity * 5; // Negative because canvas Y is inverted
+                
+                this.active = true;
+                this.time = 0;
+                this.path = []; // Store trail
+                this.startX = this.x;
+            }
+
+            update(dt) {
+                if (!this.active) return;
+
+                // Physics Math
+                this.vy += gravity * 0.1; // Add Gravity
+                this.x += this.vx * dt;
+                this.y += this.vy * dt;
+                this.time += dt;
+
+                // Store trail every few frames
+                if (this.time % 5 < 1) this.path.push({x: this.x, y: this.y});
+
+                // Collision with Ground
+                if (this.y + this.radius >= canvas.height - groundHeight) {
+                    this.y = canvas.height - groundHeight - this.radius;
+                    this.active = false; // Stop moving
+                    
+                    // Final Stats update
+                    const distance = (this.x - this.startX) / 5; // Scale down to "meters"
+                    document.getElementById('distVal').innerText = distance.toFixed(1);
+                }
+                
+                // Update live stats if active
+                if (this.active) {
+                    document.getElementById('timeVal').innerText = (this.time * 5).toFixed(1);
+                    document.getElementById('heightVal').innerText = Math.max(0, (canvas.height - groundHeight - this.y)/5).toFixed(1);
+                }
+            }
+
+            draw() {
+                // Draw Trail
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 2;
+                for (let p of this.path) {
+                    ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+
+                // Draw Ball
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.active ? '#ff4757' : '#2f3542';
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function fire() {
+            const angle = document.getElementById('angle').value;
+            const speed = document.getElementById('speed').value;
+            balls.push(new Ball(angle, speed));
+        }
+
+        function clearTrace() {
+            balls = [];
+            document.getElementById('timeVal').innerText = "0.0";
+            document.getElementById('distVal').innerText = "0.0";
+            document.getElementById('heightVal').innerText = "0.0";
+        }
+
+        // Main Animation Loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawScene(); // Draw Ground & Cannon
+
+            balls.forEach(ball => {
+                ball.update(0.05); // Time step
+                ball.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        function drawScene() {
+            // Draw Ground
+            ctx.fillStyle = '#2ed573'; // Grass Green
+            ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
+            
+            // Draw Cannon (Simple Rectangle)
+            ctx.save();
+            ctx.translate(50, canvas.height - groundHeight - 10);
+            const angle = document.getElementById('angle').value;
+            ctx.rotate(-angle * Math.PI / 180);
+            ctx.fillStyle = '#2f3542';
+            ctx.fillRect(0, -10, 60, 20); // Barrel
+            ctx.restore();
+
+            // Draw Wheel
+            ctx.beginPath();
+            ctx.arc(50, canvas.height - groundHeight - 10, 15, 0, Math.PI*2);
+            ctx.fillStyle = '#57606f';
+            ctx.fill();
+        }
+
+        // Input Listeners to update display numbers
+        document.getElementById('angle').addEventListener('input', (e) => {
+            document.getElementById('angleDisp').innerText = e.target.value;
+        });
+        document.getElementById('speed').addEventListener('input', (e) => {
+            document.getElementById('speedDisp').innerText = e.target.value;
+        });
+
+        // Start
+        resize();
+        animate();
+
+    </script>
+</body>
+</html>
