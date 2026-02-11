@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My School STEM Lab</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; text-align: center; margin: 0; padding: 40px; }
+        h1 { font-size: 3em; margin-bottom: 10px; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p { color: #94a3b8; font-size: 1.2em; margin-bottom: 50px; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+        
+        .card { 
+            background: #1e293b; padding: 25px; border-radius: 15px; text-decoration: none; color: white; 
+            transition: transform 0.2s, border 0.2s; border: 1px solid #334155; display: block; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #38bdf8; background: #253346; }
+        
+        .icon { font-size: 3em; margin-bottom: 15px; display: block; }
+        h3 { margin: 0; font-size: 1.4em; color: #e2e8f0; }
+        .desc { color: #94a3b8; margin-top: 10px; font-size: 0.9em; line-height: 1.4; }
+        .tag { position: absolute; top: 10px; right: 10px; font-size: 0.7em; padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase; }
+        
+        .phy { background: #ef4444; color: white; }
+        .chem { background: #f59e0b; color: white; }
+        .bio { background: #10b981; color: white; }
+        .space { background: #8b5cf6; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Virtual STEM Lab</h1>
+    <p>Select a simulation to begin your experiment.</p>
+
+    <div class="grid">
+        <a href="cannon.html" class="card">
+            <span class="tag phy">Physics</span>
+            <span class="icon">💣</span>
+            <h3>Cannon Lab</h3>
+            <div class="desc">Projectile Motion & Gravity</div>
+        </a>
+        <a href="optics.html" class="card">
+            <span class="tag phy">Physics</span>
+            <span class="icon">🔦</span>
+            <h3>Optics Lab</h3>
+            <div class="desc">Refraction & Snell's Law</div>
+        </a>
+        <a href="pendulum.html" class="card">
+            <span class="tag phy">Physics</span>
+            <span class="icon">⏱️</span>
+            <h3>Pendulum</h3>
+            <div class="desc">Simple Harmonic Motion</div>
+        </a>
+
+        <a href="gas_lab.html" class="card">
+            <span class="tag chem">Chem</span>
+            <span class="icon">💨</span>
+            <h3>Gas Properties</h3>
+            <div class="desc">Ideal Gas Law (PV=nRT)</div>
+        </a>
+        <a href="redox.html" class="card">
+            <span class="tag chem">Chem</span>
+            <span class="icon">🔋</span>
+            <h3>Redox Reactor</h3>
+            <div class="desc">Electron Transfer & Ions</div>
+        </a>
+
+        <a href="enzyme_lab.html" class="card">
+            <span class="tag bio">Bio</span>
+            <span class="icon">🧬</span>
+            <h3>Enzyme Lab</h3>
+            <div class="desc">Proteins, Cofactors & Heat</div>
+        </a>
+        <a href="virus.html" class="card">
+            <span class="tag bio">Bio</span>
+            <span class="icon">🦠</span>
+            <h3>Virus Lab</h3>
+            <div class="desc">Epidemiology & Spread</div>
+        </a>
+
+        <a href="orbit.html" class="card">
+            <span class="tag space">Space</span>
+            <span class="icon">🪐</span>
+            <h3>Gravity Sandbox</h3>
+            <div class="desc">Orbits & Solar Systems</div>
+        </a>
+
+        <a href="circuit.html" class="card">
+    <span class="tag phy">Physics</span>
+    <span class="icon">⚡</span>
+    <h3>Circuit Lab</h3>
+    <div class="desc">Series vs Parallel Circuits</div>
+</a>
+
+<a href="ph_scale.html" class="card">
+    <span class="tag chem">Chem</span>
+    <span class="icon">🧪</span>
+    <h3>pH Scale</h3>
+    <div class="desc">Acids, Bases & Indicators</div>
+</a>
+
+<a href="evolution.html" class="card">
+    <span class="tag bio">Bio</span>
+    <span class="icon">🧬</span>
+    <h3>Evolution</h3>
+    <div class="desc">Natural Selection Sim</div>
+</a>
+
+<a href="earthquake.html" class="card">
+    <span class="tag space">Earth</span>
+    <span class="icon">🌋</span>
+    <h3>Seismograph</h3>
+    <div class="desc">P-Waves & S-Waves</div>
+</a>
+<a href="ripple.html" class="card">
+    <span class="tag phy">Physics</span>
+    <span class="icon">🌊</span>
+    <h3>Ripple Tank</h3>
+    <div class="desc">Wave Interference</div>
+</a>
+
+<a href="balancing.html" class="card">
+    <span class="tag chem">Chem</span>
+    <span class="icon">⚖️</span>
+    <h3>Balancing Act</h3>
+    <div class="desc">Chemical Equations</div>
+</a>
+
+<a href="genetics.html" class="card">
+    <span class="tag bio">Bio</span>
+    <span class="icon">🧩</span>
+    <h3>Genetics</h3>
+    <div class="desc">Punnett Squares</div>
+</a>
+
+<a href="moon_phases.html" class="card">
+    <span class="tag space">Space</span>
+    <span class="icon">🌑</span>
+    <h3>Moon Phases</h3>
+    <div class="desc">Orbit Visualization</div>
+</a>
+
+<a href="doppler.html" class="card">
+    <span class="tag phy">Physics</span>
+    <span class="icon">🔊</span>
+    <h3>Doppler Effect</h3>
+    <div class="desc">Sound Waves & Speed</div>
+</a>
+
+<a href="decay.html" class="card">
+    <span class="tag chem">Chem</span>
+    <span class="icon">☢️</span>
+    <h3>Half-Life</h3>
+    <div class="desc">Radioactive Decay Sim</div>
+</a>
+
+<a href="photosynthesis.html" class="card">
+    <span class="tag bio">Bio</span>
+    <span class="icon">🌱</span>
+    <h3>Photosynthesis</h3>
+    <div class="desc">Light Intensity & Oxygen</div>
+</a>
+
+<a href="binary.html" class="card">
+    <span class="tag space">CS</span>
+    <span class="icon">💻</span>
+    <h3>Binary Lab</h3>
+    <div class="desc">Bits, Bytes & Logic</div>
+</a>
+
+
+    </div>
+
+    <footer style="margin-top: 50px; color: #475569; font-size: 0.8em;">
+        &copy; 2026 Virtual STEM Academy | Built by Ghulam Mehdi
+    </footer>
+
+</body>
+</html>
