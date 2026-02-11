@@ -110,13 +110,16 @@
                         </div>
                     </div>
                 </div>
-                <nav class="flex gap-2 text-xs md:text-sm font-bold mt-2 md:mt-0 overflow-x-auto">
-                    <button onclick="showSection('home')" class="nav-btn hover:text-yellow-400 text-white">Home</button>
-                    <button onclick="showSection('gallery')" class="nav-btn hover:text-yellow-400 text-white">Gallery</button>
-                    <button onclick="showSection('academics')" class="nav-btn hover:text-yellow-400 text-white">Academics</button>
-                    <button onclick="openLoginModal()" id="btn-login" class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-400 transition">Login</button>
-                    <button onclick="logout()" id="btn-logout" class="hidden bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">Logout</button>
-                </nav>
+               <nav class="flex gap-2 text-xs md:text-sm font-bold mt-2 md:mt-0 overflow-x-auto">
+    <button onclick="showSection('home')" class="nav-btn hover:text-yellow-400 text-white">Home</button>
+    <a href="stem/index.html" class="nav-btn hover:text-yellow-400 text-white flex items-center">
+        <i data-lucide="flask-conical" class="w-4 h-4 mr-1"></i> STEM Lab
+    </a>
+    <button onclick="showSection('gallery')" class="nav-btn hover:text-yellow-400 text-white">Gallery</button>
+    <button onclick="showSection('academics')" class="nav-btn hover:text-yellow-400 text-white">Academics</button>
+    <button onclick="openLoginModal()" id="btn-login" class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-400 transition">Login</button>
+    <button onclick="logout()" id="btn-logout" class="hidden bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">Logout</button>
+</nav>
             </div>
         </div>
     </header>
@@ -173,6 +176,31 @@
                     </div>
                 </div>
             </div>
+
+            <div class="bg-gradient-to-br from-indigo-900 to-blue-800 p-8 rounded-2xl shadow-2xl text-white flex flex-col md:flex-row items-center justify-between gap-6 border-b-4 border-blue-400">
+    <div class="space-y-4 text-center md:text-left">
+        <div class="inline-block bg-blue-500/30 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase border border-blue-400/50">
+            Interactive Science
+        </div>
+        <h2 class="text-3xl font-extrabold">Virtual STEM Academy</h2>
+        <p class="text-blue-100 max-w-md">
+            Perform Physics experiments, view chemical reactions, and explore biology simulations directly from your device.
+        </p>
+        <a href="stem/index.html" class="inline-flex items-center px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg">
+            Launch Simulation Lab <i class="ph ph-rocket-launch ml-2 text-xl"></i>
+        </a>
+    </div>
+    <div class="hidden md:block opacity-20">
+        <i class="ph ph-atom text-[150px]"></i>
+    </div>
+</div>
+
+
+
+
+
+
+            
 
             <div class="grid md:grid-cols-3 gap-6">
                 <div class="md:col-span-2 grid md:grid-cols-2 gap-4">
@@ -1244,5 +1272,6 @@
     </script>
 </body>
 </html>
+
 
 
